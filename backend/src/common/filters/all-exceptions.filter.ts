@@ -20,6 +20,19 @@ const STATUS_CODES: Record<number, string> = {
   429: 'RATE_LIMITED',
 };
 
+const STATUS_MESSAGES: Record<number, string> = {
+  400: 'Yêu cầu không hợp lệ.',
+  401: 'Bạn cần đăng nhập để tiếp tục.',
+  403: 'Bạn không có quyền thực hiện thao tác này.',
+  404: 'Không tìm thấy nội dung được yêu cầu.',
+  405: 'Phương thức không được hỗ trợ.',
+  409: 'Yêu cầu xung đột với dữ liệu hiện tại.',
+  413: 'Dữ liệu gửi lên quá lớn.',
+  415: 'Định dạng dữ liệu không được hỗ trợ.',
+  422: 'Dữ liệu chưa hợp lệ.',
+  429: 'Bạn thao tác quá nhanh. Vui lòng thử lại sau.',
+};
+
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger('Exceptions');
@@ -43,13 +56,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
     } else if (exception instanceof HttpException) {
       status = exception.getStatus();
       code = STATUS_CODES[status] ?? 'HTTP_ERROR';
-      const body = exception.getResponse();
-      if (typeof body === 'object' && body && 'message' in body) {
-        const m = (body as { message: unknown }).message;
-        message = Array.isArray(m) ? m.join('; ') : String(m);
-      }
+      // Nest's own messages are English ("Cannot GET /x", "Unauthorized"); the app shows
+      // these to people, so use fixed Vietnamese text per status instead.
+      message = STATUS_MESSAGES[status] ?? 'Chưa thể xử lý yêu cầu. Vui lòng thử lại.';
       if (status === 429) {
-        message = 'Bạn thao tác quá nhanh. Vui lòng thử lại sau.';
         retryAfterSeconds = 60;
       }
     } else {

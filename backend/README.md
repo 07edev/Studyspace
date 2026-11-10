@@ -56,7 +56,11 @@ hoặc đổi quyền có hiệu lực ngay.
   refresh bằng cookie bắt buộc header `X-Requested-With: XMLHttpRequest`.
 - OTP: 6 số, HMAC theo secret, hết hạn 5 phút, tối đa 5 lần thử, cooldown 60 giây (429 + `Retry-After`).
 - Mật khẩu: scrypt; 10-72 ký tự, có chữ hoa, chữ thường, chữ số.
-- Mail/SMS: hiện chỉ có `DevMailService` (in OTP ra log khi không phải production, không gửi thật). Cần adapter SMTP/SMS
-  trước khi chạy thật; production hiện không gửi và không log OTP.
-- Google: đặt `GOOGLE_CLIENT_IDS`; token được xác minh chữ ký/iss/aud/exp qua `google-auth-library`.
+- Email: gửi OTP qua SMTP khi có `SMTP_HOST` (bắt buộc ở production, thiếu thì không khởi động). Không có SMTP (chỉ dev)
+  thì OTP in ra log. Chọn nhà cung cấp và cấu hình: `docs/EMAIL_SETUP.md`. Thử nhanh: `npm run mail:test -- <email>`.
+- SMS: chưa tích hợp có chủ đích; đổi số điện thoại trả `503 SMS_NOT_CONFIGURED`.
+- Google: đặt `GOOGLE_CLIENT_IDS` (hướng dẫn tạo OAuth client: `docs/GOOGLE_SIGNIN_SETUP.md`); token được xác minh
+  chữ ký/iss/aud/exp qua `google-auth-library`.
+- Backend tự đọc `backend/.env` khi chạy (`npm run start:dev` hoặc `npm start`).
+- Thông báo lỗi trả về bằng tiếng Việt; client dựa vào `error.code` và `details[].field`, không dựa vào chữ.
 - Rate limit theo IP trên từng endpoint auth; đặt `RATE_LIMIT_DISABLED=true` để tắt khi dev (bị bỏ qua ở production).

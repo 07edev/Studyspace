@@ -386,11 +386,19 @@ export class AuthService {
       throw new ApiException(401, 'UNAUTHORIZED', 'Phiên đăng nhập không hợp lệ.');
     }
     const email = dto.channel === 'EMAIL';
-    const value = email ? normalizeEmail(dto.value) : normalizePhone(dto.value);
+    if (!email && !this.mail.canSendSms()) {
+      // Refuse before creating a challenge nobody can receive.
+      throw new ApiException(
+        503,
+        'SMS_NOT_CONFIGURED',
+        'Chưa hỗ trợ xác minh số điện thoại qua SMS. Vui lòng dùng email.',
+      );
+    }
+    const value = email ? normalizeEmail(dto.newValue) : normalizePhone(dto.newValue);
     if (!(email ? EMAIL_RE : PHONE_RE).test(value)) {
       throw new ApiException(422, 'VALIDATION_ERROR', 'Dữ liệu chưa hợp lệ.', [
         {
-          field: 'value',
+          field: 'newValue',
           rule: email ? 'email' : 'phone',
           message: email ? 'Email không hợp lệ.' : 'Số điện thoại không hợp lệ.',
         },
@@ -402,7 +410,7 @@ export class AuthService {
     });
     if (taken) {
       throw new ApiException(409, 'CONTACT_ALREADY_EXISTS', 'Thông tin liên hệ đã được sử dụng.', [
-        { field: 'value', rule: 'unique', message: 'Thông tin liên hệ đã được sử dụng.' },
+        { field: 'newValue', rule: 'unique', message: 'Thông tin liên hệ đã được sử dụng.' },
       ]);
     }
     const issued = await this.otp.issue({
@@ -415,8 +423,8 @@ export class AuthService {
     await this.mail.sendOtp(email ? { email: value } : { phone: value }, CONTACT_CHANGE, issued.code);
     return {
       challengeId: issued.challengeId,
-      channel: dto.channel,
-      destination: mask(value),
+      deliveryChannel: dto.channel,
+      maskedDestination: mask(value),
       expiresAt: issued.expiresAt,
       resendAvailableAt: issued.resendAvailableAt,
     };

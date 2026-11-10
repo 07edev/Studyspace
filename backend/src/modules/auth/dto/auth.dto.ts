@@ -128,7 +128,7 @@ export class ContactChangeRequest {
   channel: 'EMAIL' | 'PHONE';
 
   @IsString() @MinLength(8) @MaxLength(254)
-  value: string;
+  newValue: string;
 }
 
 export class ContactChangeConfirm {

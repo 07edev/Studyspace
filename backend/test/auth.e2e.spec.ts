@@ -405,8 +405,9 @@ describe('contact change', () => {
   it('changes the email only after the new address confirms the code', async () => {
     const { address, accessToken, userId } = await signup();
     const target = email();
-    const challenge = await post('/auth/contact/change-request', { channel: 'EMAIL', value: target }, accessToken).expect(202);
-    expect(challenge.body.data.destination).not.toBe(target);
+    const challenge = await post('/auth/contact/change-request', { channel: 'EMAIL', newValue: target }, accessToken).expect(202);
+    expect(challenge.body.data.maskedDestination).not.toBe(target);
+    expect(challenge.body.data.deliveryChannel).toBe('EMAIL');
     expect((await env.users.findById(userId))?.emailNormalized).toBe(address);
 
     const wrong = await post('/auth/contact/change-confirm', { challengeId: challenge.body.data.challengeId, otp: '000000' }, accessToken).expect(422);
@@ -420,10 +421,10 @@ describe('contact change', () => {
   it('rejects contacts that belong to someone else and challenges of other users', async () => {
     const a = await signup();
     const b = await signup();
-    const clash = await post('/auth/contact/change-request', { channel: 'EMAIL', value: b.address }, a.accessToken).expect(409);
+    const clash = await post('/auth/contact/change-request', { channel: 'EMAIL', newValue: b.address }, a.accessToken).expect(409);
     expect(clash.body.error.code).toBe('CONTACT_ALREADY_EXISTS');
     const target = email();
-    const challenge = await post('/auth/contact/change-request', { channel: 'EMAIL', value: target }, a.accessToken).expect(202);
+    const challenge = await post('/auth/contact/change-request', { channel: 'EMAIL', newValue: target }, a.accessToken).expect(202);
     const stolen = await post('/auth/contact/change-confirm', { challengeId: challenge.body.data.challengeId, otp: env.otp(target, 'CONTACT_CHANGE') }, b.accessToken).expect(422);
     expect(stolen.body.error.code).toBe('OTP_INVALID');
     expect((await env.users.findById(b.userId))?.emailNormalized).toBe(b.address);
@@ -431,8 +432,8 @@ describe('contact change', () => {
 
   it('changes the phone number and validates the format', async () => {
     const { accessToken, userId } = await signup();
-    await post('/auth/contact/change-request', { channel: 'PHONE', value: 'not-a-phone-number' }, accessToken).expect(422);
-    const challenge = await post('/auth/contact/change-request', { channel: 'PHONE', value: '+84 912 345 678' }, accessToken).expect(202);
+    await post('/auth/contact/change-request', { channel: 'PHONE', newValue: 'not-a-phone-number' }, accessToken).expect(422);
+    const challenge = await post('/auth/contact/change-request', { channel: 'PHONE', newValue: '+84 912 345 678' }, accessToken).expect(202);
     const res = await post('/auth/contact/change-confirm', { challengeId: challenge.body.data.challengeId, otp: env.otp('+84912345678', 'CONTACT_CHANGE') }, accessToken).expect(200);
     expect(res.body.data.phone).toBe('+84912345678');
     expect((await env.users.findById(userId))?.phoneNormalized).toBe('+84912345678');

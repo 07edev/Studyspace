@@ -1,3 +1,4 @@
+import './load-env';
 import 'reflect-metadata';
 import { createApp } from './app.factory';
 import { loadConfig } from './config/configuration';
