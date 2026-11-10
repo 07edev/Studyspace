@@ -54,6 +54,8 @@ hoặc đổi quyền có hiệu lực ngay.
   dùng lại token cũ sẽ thu hồi cả phiên (`TOKEN_REUSED`).
 - MOBILE nhận `refreshToken` trong body. WEB_ADMIN nhận cookie `ss_refresh` (HttpOnly, SameSite=Strict, path `/api/v1/auth`);
   refresh bằng cookie bắt buộc header `X-Requested-With: XMLHttpRequest`.
+- `POST /auth/login` và `GET /auth/me` trả thêm `user.admin { status, permissions }` cho ADMIN/SUPER_ADMIN (Web Admin dùng để vẽ menu; server vẫn kiểm quyền ở mọi API).
+- Super Admin đầu tiên (chỉ dev): `SEED_ADMIN_PASSWORD='...' npm run seed:admin` (bỏ biến để tự sinh mật khẩu, in một lần; chạy lại không tạo thêm tài khoản; `-- --reset-password` để đặt lại; từ chối khi `NODE_ENV=production`).
 - OTP: 6 số, HMAC theo secret, hết hạn 5 phút, tối đa 5 lần thử, cooldown 60 giây (429 + `Retry-After`).
 - Mật khẩu: scrypt; 10-72 ký tự, có chữ hoa, chữ thường, chữ số.
 - Email: gửi OTP qua SMTP khi có `SMTP_HOST` (bắt buộc ở production, thiếu thì không khởi động). Không có SMTP (chỉ dev)

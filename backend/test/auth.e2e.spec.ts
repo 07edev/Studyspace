@@ -208,6 +208,18 @@ describe('login', () => {
     expect(cookie).toMatch(/SameSite=Strict/i);
   });
 
+  it('returns admin status and permissions for admins (login and /auth/me), and nothing for users', async () => {
+    const permissions = [{ module: 'USERS' as const, actions: ['READ' as const] }];
+    await env.createUser({ email: 'perm-admin@example.test', role: Role.ADMIN, password: PASS, permissions });
+    const login = await post('/auth/login', { email: 'perm-admin@example.test', password: PASS, client: 'WEB_ADMIN' }).expect(200);
+    expect(login.body.data.user.admin).toEqual({ status: 'ACTIVE', permissions });
+    const me = await get('/auth/me', login.body.data.tokens.accessToken).expect(200);
+    expect(me.body.data.admin).toEqual({ status: 'ACTIVE', permissions });
+    const user = await signup();
+    const plain = await mobileLogin(user.address).expect(200);
+    expect(plain.body.data.user.admin).toBeUndefined();
+  });
+
   it('rejects malformed payloads without touching the database', async () => {
     const res = await post('/auth/login', { email: 'x', password: '', client: 'TV' }).expect(422);
     expect(res.body.error.code).toBe('VALIDATION_ERROR');
