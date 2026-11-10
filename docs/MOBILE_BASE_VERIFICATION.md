@@ -46,3 +46,12 @@ Kết quả cuối cùng của lint/typecheck/test và các bước Android bổ
 5. Đổi cỡ chữ/màn hình khi có thiết bị phù hợp; kiểm tra các nút dài vẫn đọc được.
 
 Auth và các domain đang ở trạng thái chờ. Những bước trên chỉ xác minh base, không xác minh đăng nhập, lưu hồ sơ hoặc API nghiệp vụ.
+
+## Chạy App cùng Backend (Android emulator)
+
+1. Backend: `cd backend && npm run start:dev` (cần MongoDB và `backend/.env`, xem `backend/README.md`). Ở dev, mã OTP in ra log của backend.
+2. App gọi `http://10.0.2.2:3000/api/v1` (địa chỉ máy chủ nhìn từ emulator, xem `src/shared/config.ts`). Bản release phải đổi sang URL HTTPS thật.
+3. Module `react-native-keychain` là native: sau khi thêm hoặc cập nhật phải build lại (`gradlew :app:installDebug`), nếu không app báo thiếu `RNKeychainManager`.
+4. Kiểm tra thủ công đã làm trên emulator (10/11/2026): đăng ký, nhận OTP, đăng nhập khi chưa xác minh (có nút "Xác minh email"), xác minh, vào app, tab Cá nhân hiện đúng tài khoản, tắt hẳn app rồi mở lại vẫn đăng nhập (khôi phục từ Keychain), đăng xuất về Welcome và mở lại vẫn ở Welcome. Phía MongoDB: phiên cũ bị thu hồi khi xoay vòng, token chỉ lưu dạng băm, đăng xuất thu hồi mọi phiên.
+
+Mẹo khi điều khiển emulator bằng `adb`: Gboard có thể hiện thanh viết tay che màn hình (bấm "Got it" và tắt `stylus_handwriting_enabled`); `adb shell input text` gõ nhanh sẽ làm rơi ký tự ở bản debug chậm nên cần gõ từng ký tự; BACK khi bàn phím ẩn sẽ đóng modal (đúng hành vi Android).

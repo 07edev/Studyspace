@@ -10,21 +10,21 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LockKeyhole, X } from 'lucide-react-native';
-import { AuthEntry } from '../features/auth/AuthEntry';
+import { AuthModal, authTitles } from '../features/auth/AuthModal';
+import { useSession, useSessionManager } from '../shared/auth/AuthProvider';
 import { features } from '../features/pending/features';
 import { PendingFeature } from '../features/pending/PendingFeatureScreen';
 import { colors } from '../shared/theme/tokens';
-import { AppText, Button, EmptyState } from '../shared/ui';
+import { AppText, Button, EmptyState, useToast } from '../shared/ui';
 import { useModal } from './ModalCoordinator';
 import type { ModalRoute, ModalSize } from './types';
 
 function presentation(route: ModalRoute): { title: string; size: ModalSize } {
   switch (route.name) {
     case 'auth':
-      return {
-        title: route.mode === 'login' ? 'Đăng nhập' : 'Đăng ký',
-        size: 'F',
-      };
+      return { title: authTitles[route.mode], size: 'F' };
+    case 'session-ended':
+      return { title: 'Phiên đã kết thúc', size: 'C' };
     case 'auth-required':
       return { title: 'Đăng nhập để tiếp tục', size: 'C' };
     case 'feature':
@@ -46,9 +46,37 @@ function ModalContent({
   onContinue: () => void;
 }) {
   const { open, close } = useModal();
+  const session = useSession();
+  const manager = useSessionManager();
+  const toast = useToast();
   switch (route.name) {
     case 'auth':
-      return <AuthEntry mode={route.mode} onContinue={onContinue} />;
+      return <AuthModal route={route} onAuthenticated={onContinue} />;
+    case 'session-ended':
+      return (
+        <View style={styles.content}>
+          <EmptyState
+            icon={<LockKeyhole size={28} color={colors.primary} />}
+            title={
+              route.reason === 'suspended'
+                ? 'Tài khoản đang bị khóa'
+                : 'Phiên đăng nhập đã hết hạn'
+            }
+            description={
+              route.reason === 'suspended'
+                ? 'Tài khoản của bạn hiện không thể sử dụng. Nếu bạn cho rằng đây là nhầm lẫn, hãy liên hệ quản trị viên.'
+                : 'Vì lý do bảo mật, bạn cần đăng nhập lại để tiếp tục. Bạn vẫn có thể xem nội dung công khai.'
+            }
+          />
+          {route.reason === 'expired' && (
+            <Button
+              title="Đăng nhập lại"
+              onPress={() => open({ name: 'auth', mode: 'login' })}
+            />
+          )}
+          <Button title="Để sau" variant="ghost" onPress={close} />
+        </View>
+      );
     case 'auth-required':
       return (
         <View style={styles.content}>
@@ -67,6 +95,29 @@ function ModalContent({
     case 'feature':
       return <PendingFeature feature={route.feature} />;
     case 'settings':
+      if (session.status === 'authenticated') {
+        return (
+          <View style={styles.content}>
+            <AppText variant="heading">
+              {session.user?.profile.displayName ?? session.user?.email}
+            </AppText>
+            <AppText muted>{session.user?.email}</AppText>
+            <AppText muted>
+              Hồ sơ, quyền riêng tư và cài đặt thông báo sẽ có trong bản cập nhật tới.
+            </AppText>
+            <Button
+              title="Đăng xuất"
+              variant="secondary"
+              onPress={async () => {
+                await manager.logout();
+                close();
+                onGuest();
+                toast('Bạn đã đăng xuất.');
+              }}
+            />
+          </View>
+        );
+      }
       return (
         <View style={styles.content}>
           <AppText>Bạn đang sử dụng chế độ Khách.</AppText>

@@ -31,7 +31,7 @@ Giữ React Native CLI ở gốc để giữ Android/iOS và lệnh chạy hiệ
 - Kích thước C: hộp xác nhận; L: sheet; F: toàn màn hình. Màn dài có ScrollView và KeyboardAvoidingView.
 - Mỗi form gọi `setDirty(true/false)` khi dữ liệu thay đổi/lưu xong. Đóng hoặc chuyển route khi dirty sẽ xin quyết định; giữ form mounted trong khi hỏi để bảo toàn draft. Nút Back khi đang hỏi sẽ giữ form.
 - Dirty guard mới được kiểm thử ở reducer; cần kiểm thử tiếp với form nghiệp vụ thật tại I07.
-- `auth-required` hiện chỉ là điểm chặn giao diện cho Khách. Chưa có AuthGate/PermissionGate hoàn chỉnh hoặc server authorization.
+- Phiên đăng nhập do `shared/auth/sessionManager.ts` quản lý (xem mục "Phiên đăng nhập"). `auth-required` vẫn là điểm chặn giao diện cho Khách; chưa có resume hành động sau đăng nhập (U19) hay PermissionGate đầy đủ. Server luôn là nơi kiểm tra quyền.
 - Android dùng cấu hình khôi phục fragment và Back theo [hướng dẫn React Navigation](https://reactnavigation.org/docs/getting-started/).
 
 ## UI và tích hợp TV2/TV3
@@ -52,9 +52,19 @@ Danh sách đầy đủ 44 operations: [TV1_API_CHECKLIST.md](TV1_API_CHECKLIST.
 - Response thành công có `success`, `data`, `requestId`; lỗi có code/message/details/requestId. 204 không parse body.
 - Access token và Idempotency-Key được truyền rõ ràng theo request; client không có secret hardcode.
 - Có timeout, hủy request, phân biệt lỗi mạng/hủy/quá hạn, giữ HTTP status/requestId/field errors/cooldown.
-- Không tự retry mutation. Chưa triển khai refresh token, cache hoặc automatic auth retry; các phần này thuộc I01/I07.
+- Không tự retry mutation, trừ trường hợp 401 do access token hết hạn: `SessionManager` refresh đúng một lần rồi gửi lại đúng một lần (xem bên dưới). Chưa có query cache.
 - Kiểu generic của response không thay thế validation schema runtime cho từng DTO khi tích hợp.
 - Interface IdentityContext, PublicAuthor, AuditAction, StatsContribution là đề xuất từ báo cáo; cần chốt trường cụ thể trước khi các domain dùng thật.
+
+## Phiên đăng nhập (App)
+
+- `SessionManager` (UI-agnostic, có test) giữ access token trong bộ nhớ; refresh token nằm trong Keychain/Keystore (`react-native-keychain`, `tokenStorage.ts`), không bao giờ ở AsyncStorage.
+- Mở app: `restore()` đọc refresh token, xoay vòng token rồi gọi `/auth/me`. Mất mạng thì giữ token để lần sau thử lại; server từ chối thì xóa token và ghi lý do (`expired`/`suspended`) để hiện U57.
+- Request cần đăng nhập đi qua `session.request()`: gặp 401 thì refresh tối đa một lần và gửi lại tối đa một lần (không lặp vô hạn). Nhiều request cùng lỗi 401 dùng chung MỘT lần refresh, vì server xoay vòng token và dùng lại token cũ bị coi là bị đánh cắp.
+- `ACCOUNT_SUSPENDED` kết thúc phiên ngay. Đăng xuất luôn xóa phiên cục bộ dù server không phản hồi.
+- `AuthProvider` + `useSession()` đưa trạng thái (`restoring | guest | authenticated`) cho giao diện. Đăng xuất chủ động đưa về Welcome; phiên hết hạn/bị khóa giữ người dùng ở chế độ Khách kèm giải thích.
+- U01–U04 là một modal toàn màn hình duy nhất chuyển bước (`AuthModal`): đăng nhập, đăng ký, xác minh OTP, quên mật khẩu; có dirty guard và chống bấm đôi (`features/auth/formHooks.ts`).
+- Chưa có: nút Google ở U03 (cần OAuth client, xem `docs/GOOGLE_SIGNIN_SETUP.md`).
 
 ## Quyền và schema dự kiến cho Backend
 

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react-native';
 import { useModal } from '../../navigation/ModalCoordinator';
 import type { FeatureId } from '../../navigation/types';
+import { useSession } from '../../shared/auth/AuthProvider';
 import { colors } from '../../shared/theme/tokens';
 import { AppText, Button, Card, Screen } from '../../shared/ui';
 import { features } from '../pending/features';
@@ -27,6 +28,8 @@ const links: { feature: FeatureId; Icon: LucideIcon }[] = [
 
 export function ProfileScreen() {
   const { open } = useModal();
+  const session = useSession();
+  const user = session.status === 'authenticated' ? session.user : undefined;
   return (
     <Screen>
       <View style={styles.header}>
@@ -39,14 +42,27 @@ export function ProfileScreen() {
         <View style={styles.avatar}>
           <UserRound size={32} color={colors.primary} />
         </View>
-        <AppText variant="heading">Chào bạn mới!</AppText>
-        <AppText muted style={styles.center}>
-          Đăng nhập để lưu góc học yêu thích và quản lý những đóng góp của bạn.
-        </AppText>
-        <Button
-          title="Đăng nhập / Đăng ký"
-          onPress={() => open({ name: 'auth', mode: 'login' })}
-        />
+        {user ? (
+          <>
+            <AppText variant="heading">
+              {user.profile.displayName ?? 'Bạn'}
+            </AppText>
+            <AppText muted style={styles.center}>
+              {user.email}
+            </AppText>
+          </>
+        ) : (
+          <>
+            <AppText variant="heading">Chào bạn mới!</AppText>
+            <AppText muted style={styles.center}>
+              Đăng nhập để lưu góc học yêu thích và quản lý những đóng góp của bạn.
+            </AppText>
+            <Button
+              title="Đăng nhập / Đăng ký"
+              onPress={() => open({ name: 'auth', mode: 'login' })}
+            />
+          </>
+        )}
       </Card>
       <AppText variant="label" muted>
         GÓC HỌC CỦA TÔI
@@ -58,12 +74,15 @@ export function ProfileScreen() {
             accessibilityRole="button"
             style={styles.row}
             onPress={() =>
-              open({
-                name: 'auth-required',
-                reason: `Đăng nhập để xem ${features[
-                  feature
-                ].title.toLocaleLowerCase('vi')}.`,
-              })
+              user
+                ? // The owning team (TV2/TV3) replaces this pending screen with the real one.
+                  open({ name: 'feature', feature })
+                : open({
+                    name: 'auth-required',
+                    reason: `Đăng nhập để xem ${features[
+                      feature
+                    ].title.toLocaleLowerCase('vi')}.`,
+                  })
             }
           >
             <Icon size={21} color={colors.primary} />
