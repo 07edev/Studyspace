@@ -94,7 +94,7 @@ Không lưu password/OTP/refresh token dạng rõ. Mobile token storage sẽ dù
 
 ## Những phần còn thiếu của base
 
-- Web Admin (`web-admin/`) và các component dùng chung của nó.
+- Trang nghiệp vụ của Web Admin (khung, đăng nhập và component dùng chung đã có: `web-admin/README.md`).
 - PermissionGate thật cho App; U19 (quay lại hành động sau đăng nhập).
 - Yêu cầu quyền vị trí/thông báo theo luồng chức năng; hiện không yêu cầu nên từ chối quyền không chặn chế độ Khách.
 - Thư viện chọn ảnh/tệp native và `FileUploader` thật (TV3); chưa có push token (cần Firebase).

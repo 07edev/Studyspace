@@ -1,4 +1,4 @@
-import type { AccountStatus, Role } from './api';
+import type { AccountStatus, Permission, Role } from './api';
 
 // Shapes returned by the backend auth endpoints (see backend/README.md and the G1 spec).
 export type GeoPoint = { lat: number; lng: number };
@@ -27,6 +27,8 @@ export type User = {
   createdAt: string;
   updatedAt?: string;
   lastLoginAt?: string;
+  // Only for ADMIN / SUPER_ADMIN (login and GET /auth/me): drives which menus the web admin shows.
+  admin?: { status: 'ACTIVE' | 'DISABLED'; permissions: Permission[] };
 };
 // Body of PATCH /users/me/profile: send only what changes; null clears an optional field.
 export type ProfilePatch = {

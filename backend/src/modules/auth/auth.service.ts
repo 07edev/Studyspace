@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ApiException } from '../../common/api-error';
-import { AccountStatus, AdminStatus, Role } from '../../common/enums';
+import { AccountStatus, AdminStatus, Role, type Permission } from '../../common/enums';
 import type { IdentityContext } from '../../common/identity';
 import { normalizeEmail, normalizePhone, sha256 } from '../../common/utils/normalize';
 import { APP_CONFIG, type AppConfig } from '../../config/configuration';
@@ -41,8 +41,14 @@ const mask = (value: string) =>
     ? value.replace(/^(.).*(@.*)$/, '$1***$2')
     : `${value.slice(0, 3)}***${value.slice(-2)}`;
 
+// The User DTO plus, for ADMIN / SUPER_ADMIN, the admin status and permission list the web admin
+// needs to decide which menus to show. The server still checks permissions on every request.
+export type AuthUserDto = ReturnType<typeof toUserDto> & {
+  admin?: { status: AdminStatus; permissions: Permission[] };
+};
+
 export type SessionResult = {
-  body: { user: ReturnType<typeof toUserDto>; tokens: Record<string, unknown> };
+  body: { user: AuthUserDto; tokens: Record<string, unknown> };
   // Present for every login; the controller puts it in the body (MOBILE) or a cookie (WEB).
   refreshToken: string;
   client: Client;
@@ -222,16 +228,27 @@ export class AuthService {
     return this.buildSession(user, familyId, refreshToken, client);
   }
 
-  private buildSession(
+  private async withAdmin(user: UserDocument): Promise<AuthUserDto> {
+    const dto: AuthUserDto = toUserDto(user);
+    if (user.role !== Role.USER) {
+      const profile = await this.admins.findOne({ userId: user._id }).lean();
+      if (profile) {
+        dto.admin = { status: profile.status, permissions: profile.permissions };
+      }
+    }
+    return dto;
+  }
+
+  private async buildSession(
     user: UserDocument,
     familyId: string,
     refreshToken: string,
     client: Client,
-  ): SessionResult {
+  ): Promise<SessionResult> {
     const access = this.tokens.sign(String(user._id), familyId);
     return {
       body: {
-        user: toUserDto(user),
+        user: await this.withAdmin(user),
         // The web admin keeps its refresh token in an HttpOnly cookie, never in JS-readable JSON.
         tokens: client === 'MOBILE' ? { ...access, refreshToken } : { ...access },
       },
@@ -276,7 +293,7 @@ export class AuthService {
     if (!user) {
       throw new ApiException(401, 'UNAUTHORIZED', 'Phiên đăng nhập không hợp lệ.');
     }
-    return toUserDto(user);
+    return this.withAdmin(user);
   }
 
   // ---------- password ----------

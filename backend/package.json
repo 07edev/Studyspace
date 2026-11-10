@@ -11,7 +11,8 @@
     "start:dev": "ts-node-dev --respawn --transpile-only src/main.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "mail:test": "ts-node --transpile-only scripts/send-test-mail.ts"
+    "mail:test": "ts-node --transpile-only scripts/send-test-mail.ts",
+    "seed:admin": "ts-node --transpile-only scripts/seed-super-admin.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
