@@ -1,6 +1,20 @@
 import type { AccountStatus, Role } from './api';
 
 // Shapes returned by the backend auth endpoints (see backend/README.md and the G1 spec).
+export type GeoPoint = { lat: number; lng: number };
+export type Profile = {
+  displayName?: string;
+  avatarFileId?: string;
+  avatarUrl?: string;
+  dateOfBirth?: string; // YYYY-MM-DD
+  hometown?: string;
+  bio?: string;
+  universityId?: string;
+  majorId?: string;
+  subjectIds?: string[];
+  locationMode?: 'MANUAL' | 'CURRENT_LOCATION';
+  location?: GeoPoint;
+};
 export type User = {
   id: string;
   email: string;
@@ -9,9 +23,33 @@ export type User = {
   status: AccountStatus;
   emailVerified: boolean;
   authProviders: string[];
-  profile: { displayName?: string } & Record<string, unknown>;
+  profile: Profile;
   createdAt: string;
+  updatedAt?: string;
   lastLoginAt?: string;
+};
+// Body of PATCH /users/me/profile: send only what changes; null clears an optional field.
+export type ProfilePatch = {
+  [K in keyof Omit<Profile, 'avatarUrl'>]?: Profile[K] | null;
+};
+export type PrivacySettings = {
+  profileVisibility: 'PUBLIC' | 'PRIVATE';
+  showUniversity: boolean;
+  showMajor: boolean;
+};
+export type NotificationSettings = {
+  postInteraction: boolean;
+  moderation: boolean;
+  adminMessage: boolean;
+  system: boolean;
+  pushEnabled: boolean;
+};
+export type ContactChallenge = {
+  challengeId: string;
+  deliveryChannel: 'EMAIL' | 'PHONE';
+  maskedDestination: string;
+  expiresAt: string;
+  resendAvailableAt?: string;
 };
 export type AccessTokens = {
   accessToken: string;

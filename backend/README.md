@@ -45,7 +45,7 @@ hoặc đổi quyền có hiệu lực ngay.
 - `idempotency_keys` có thêm `requestHash`, `state`, `response` so với ERD để phát lại kết quả an toàn.
 - Collection TV1: users, admin_profiles, sessions, otp_challenges, user_devices, audit_logs,
   idempotency_keys, outbox_events (xem `docs/ARCHITECTURE.md`).
-- Đã có: 15 endpoint `/auth/*` (I01). Chưa có: users (I02), admin (I03/I04), stats (I05), audit API (I06).
+- Đã có: 15 endpoint `/auth/*` (I01) và 9 endpoint `/users/*` (I02). Chưa có: admin (I03/I04), stats (I05), audit API (I06).
 
 ## Auth (I01)
 
@@ -64,3 +64,16 @@ hoặc đổi quyền có hiệu lực ngay.
 - Backend tự đọc `backend/.env` khi chạy (`npm run start:dev` hoặc `npm start`).
 - Thông báo lỗi trả về bằng tiếng Việt; client dựa vào `error.code` và `details[].field`, không dựa vào chữ.
 - Rate limit theo IP trên từng endpoint auth; đặt `RATE_LIMIT_DISABLED=true` để tắt khi dev (bị bỏ qua ở production).
+
+## Users (I02)
+
+- `GET /users/me`, `PATCH /users/me/profile` (chỉ gửi trường đổi; `null` hoặc chuỗi rỗng xóa trường tùy chọn; `displayName` không xóa được),
+  `GET|PATCH /users/me/privacy`, `GET|PATCH /users/me/notification-settings` (PATCH nhận một phần các trường),
+  `GET /users/{id}/public-profile` (công khai; chỉ tài khoản ACTIVE; hồ sơ PRIVATE chỉ trả `id`, `displayName`, `avatarUrl`),
+  `POST /users/me/devices` (trả `{message, deviceId}`), `DELETE /users/me/devices/{deviceId}` (204).
+- **TV2/TV3 cần nối hai cổng** trong `src/modules/users/ports.ts` (đổi `useClass` ở `users.module.ts`):
+  `TaxonomyRef.assertValid` (trường/ngành/môn tồn tại, ngành thuộc trường; lỗi `UNIVERSITY_MAJOR_MISMATCH` 422) và
+  `FileReadyRef.assertReady` (tệp READY, đúng mục đích avatar, thuộc người dùng; lỗi `FILE_NOT_READY` 409).
+  Khi chưa nối, sửa trường/ngành/môn hoặc `avatarFileId` trả 503 (`TAXONOMY_NOT_CONNECTED`, `FILE_SERVICE_NOT_CONNECTED`) thay vì tin id chưa kiểm tra.
+- `user_devices` lưu `pushTokenHash` (tra cứu/duy nhất) và thêm `pushToken` (`select: false`, không bao giờ trả ra API) vì gửi push cần token thật.
+  Một token chỉ thuộc tài khoản đăng ký sau cùng; mỗi người tối đa 10 thiết bị (xóa cái cũ nhất).

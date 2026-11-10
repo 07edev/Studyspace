@@ -21,7 +21,7 @@ export function VerifyEmailForm({
 }) {
   const session = useSessionManager();
   const api = useMemo(() => authApi(session), [session]);
-  const { close, setDirty } = useModal();
+  const { open, setDirty } = useModal();
   const toast = useToast();
   const [otp, setOtp] = useState('');
   const [local, setLocal] = useState<string>();
@@ -42,8 +42,9 @@ export function VerifyEmailForm({
     });
     if (done) {
       setDirty(false);
-      close();
       onAuthenticated();
+      // New account: offer to complete the profile (U05). It can be skipped.
+      open({ name: 'profile-edit', mode: 'complete' });
       toast('Email đã được xác minh. Chào mừng bạn đến StudySpace!');
     }
   };

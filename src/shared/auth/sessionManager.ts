@@ -3,6 +3,13 @@ import { ApiError, createApiClient } from '../api/client';
 import type { TokenStorage } from './tokenStorage';
 
 type Api = ReturnType<typeof createApiClient>;
+
+// A 401 means "your access token is no good" only with these codes. Other 401s are ordinary
+// business answers (e.g. INVALID_CREDENTIALS for a wrong current password) and must reach
+// the form instead of ending the session.
+const TOKEN_REJECTED = new Set(['UNAUTHORIZED', 'TOKEN_EXPIRED', 'TOKEN_INVALID']);
+const isTokenRejected = (error: unknown): error is ApiError =>
+  error instanceof ApiError && error.status === 401 && TOKEN_REJECTED.has(error.code);
 type RequestOptions = Parameters<Api['request']>[1];
 
 export type SessionState = {
@@ -83,6 +90,20 @@ export class SessionManager {
     this.setState({ status: 'authenticated', user: session.user });
   }
 
+  /** Replaces the cached user after the server returned a fresh one (profile edit, contact change). */
+  setUser(user: User): void {
+    if (this.state.status === 'authenticated') {
+      this.setState({ ...this.state, user });
+    }
+  }
+
+  /** Re-reads GET /users/me so the profile shown matches the server. */
+  async refreshUser(): Promise<User> {
+    const user = await this.request<User>('/users/me');
+    this.setUser(user);
+    return user;
+  }
+
   async logout(): Promise<void> {
     const token = this.accessToken;
     try {
@@ -121,7 +142,7 @@ export class SessionManager {
         await this.endLocally(error);
         throw error;
       }
-      if (!(error instanceof ApiError) || error.status !== 401) {
+      if (!isTokenRejected(error)) {
         throw error;
       }
       // Expired or revoked access token: refresh once, retry once.
@@ -134,7 +155,7 @@ export class SessionManager {
       try {
         return await this.api.request<T>(path, { ...options, accessToken: this.accessToken });
       } catch (retryError) {
-        if (retryError instanceof ApiError && retryError.status === 401) {
+        if (isTokenRejected(retryError)) {
           await this.endLocally(retryError);
         }
         throw retryError;

@@ -11,15 +11,24 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LockKeyhole, X } from 'lucide-react-native';
 import { AuthModal, authTitles } from '../features/auth/AuthModal';
-import { useSession, useSessionManager } from '../shared/auth/AuthProvider';
+import { DeleteAccountForm, LogoutConfirm, SettingsPanel } from '../features/profile/AccountSettings';
+import { ChangePasswordForm } from '../features/profile/ChangePasswordForm';
+import { ContactVerifyForm } from '../features/profile/ContactVerifyForm';
+import { NotificationSettingsForm } from '../features/profile/NotificationSettingsForm';
+import { PrivacyForm } from '../features/profile/PrivacyForm';
+import { ProfileEditForm } from '../features/profile/ProfileEditForm';
+import { useSession } from '../shared/auth/AuthProvider';
 import { features } from '../features/pending/features';
 import { PendingFeature } from '../features/pending/PendingFeatureScreen';
 import { colors } from '../shared/theme/tokens';
-import { AppText, Button, EmptyState, useToast } from '../shared/ui';
+import { AppText, Button, ConfirmDialog, EmptyState, useConfirmHost } from '../shared/ui';
 import { useModal } from './ModalCoordinator';
 import type { ModalRoute, ModalSize } from './types';
 
-function presentation(route: ModalRoute): { title: string; size: ModalSize } {
+function presentation(
+  route: ModalRoute,
+  signedIn: boolean,
+): { title: string; size: ModalSize } {
   switch (route.name) {
     case 'auth':
       return { title: authTitles[route.mode], size: 'F' };
@@ -30,7 +39,24 @@ function presentation(route: ModalRoute): { title: string; size: ModalSize } {
     case 'feature':
       return { title: features[route.feature].title, size: 'L' };
     case 'settings':
-      return { title: 'Cài đặt', size: 'L' };
+      return { title: 'Cài đặt', size: signedIn ? 'F' : 'L' };
+    case 'profile-edit':
+      return {
+        title: route.mode === 'complete' ? 'Hoàn thiện hồ sơ' : 'Chỉnh sửa hồ sơ',
+        size: 'F',
+      };
+    case 'contact-verify':
+      return { title: 'Xác minh thay đổi', size: 'C' };
+    case 'change-password':
+      return { title: 'Đổi mật khẩu', size: 'F' };
+    case 'privacy':
+      return { title: 'Quyền riêng tư', size: 'L' };
+    case 'notifications':
+      return { title: 'Cài đặt thông báo', size: 'L' };
+    case 'logout-confirm':
+      return { title: 'Đăng xuất', size: 'C' };
+    case 'delete-account':
+      return { title: 'Xóa tài khoản', size: 'L' };
     case 'about':
       return { title: 'Về StudySpace', size: 'L' };
   }
@@ -47,8 +73,6 @@ function ModalContent({
 }) {
   const { open, close } = useModal();
   const session = useSession();
-  const manager = useSessionManager();
-  const toast = useToast();
   switch (route.name) {
     case 'auth':
       return <AuthModal route={route} onAuthenticated={onContinue} />;
@@ -96,27 +120,7 @@ function ModalContent({
       return <PendingFeature feature={route.feature} />;
     case 'settings':
       if (session.status === 'authenticated') {
-        return (
-          <View style={styles.content}>
-            <AppText variant="heading">
-              {session.user?.profile.displayName ?? session.user?.email}
-            </AppText>
-            <AppText muted>{session.user?.email}</AppText>
-            <AppText muted>
-              Hồ sơ, quyền riêng tư và cài đặt thông báo sẽ có trong bản cập nhật tới.
-            </AppText>
-            <Button
-              title="Đăng xuất"
-              variant="secondary"
-              onPress={async () => {
-                await manager.logout();
-                close();
-                onGuest();
-                toast('Bạn đã đăng xuất.');
-              }}
-            />
-          </View>
-        );
+        return <SettingsPanel />;
       }
       return (
         <View style={styles.content}>
@@ -139,6 +143,42 @@ function ModalContent({
           />
         </View>
       );
+    case 'delete-account':
+      // Handles its own signed-out state: it signs the user out once the request is accepted.
+      return <DeleteAccountForm onGuest={onGuest} />;
+    case 'profile-edit':
+    case 'contact-verify':
+    case 'change-password':
+    case 'privacy':
+    case 'notifications':
+    case 'logout-confirm':
+      if (session.status !== 'authenticated') {
+        return (
+          <View style={styles.content}>
+            <EmptyState
+              icon={<LockKeyhole size={28} color={colors.primary} />}
+              title="Cần đăng nhập"
+              description="Đăng nhập để tiếp tục."
+            />
+            <Button title="Đăng nhập" onPress={() => open({ name: 'auth', mode: 'login' })} />
+            <Button title="Để sau" variant="ghost" onPress={close} />
+          </View>
+        );
+      }
+      switch (route.name) {
+        case 'profile-edit':
+          return <ProfileEditForm mode={route.mode} />;
+        case 'contact-verify':
+          return <ContactVerifyForm challenge={route.challenge} />;
+        case 'change-password':
+          return <ChangePasswordForm />;
+        case 'privacy':
+          return <PrivacyForm />;
+        case 'notifications':
+          return <NotificationSettingsForm />;
+        default:
+          return <LogoutConfirm onGuest={onGuest} />;
+      }
     case 'about':
       return (
         <View style={styles.content}>
@@ -164,17 +204,35 @@ export function ModalHost({
   onContinue: () => void;
 }) {
   const { state, close, stay, discard } = useModal();
+  const { request, answer } = useConfirmHost();
+  const session = useSession();
+  // A question asked with useConfirm() while no modal is open (e.g. on a tab): ModalHost is the only
+  // owner of native Modals, so it shows a compact one.
   if (!state.active) {
-    return null;
+    return request ? (
+      <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={() => answer(false)}>
+        <View style={[styles.overlay, styles.center]}>
+          <Pressable accessible={false} style={StyleSheet.absoluteFill} onPress={() => answer(false)} />
+          <View style={[styles.panel, styles.compact]}>
+            <ConfirmDialog
+              {...request}
+              onConfirm={() => answer(true)}
+              onCancel={() => answer(false)}
+            />
+          </View>
+        </View>
+      </Modal>
+    ) : null;
   }
-  const { title, size } = presentation(state.active);
+  const covered = !!state.pending || !!request;
+  const { title, size } = presentation(state.active, session.status === 'authenticated');
   return (
     <Modal
       visible
       transparent
       animationType="fade"
       statusBarTranslucent
-      onRequestClose={state.pending ? stay : close}
+      onRequestClose={request ? () => answer(false) : state.pending ? stay : close}
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -184,7 +242,7 @@ export function ModalHost({
           <Pressable
             accessible={false}
             style={StyleSheet.absoluteFill}
-            onPress={state.pending ? stay : close}
+            onPress={request ? () => answer(false) : state.pending ? stay : close}
           />
         )}
         <SafeAreaView
@@ -203,11 +261,9 @@ export function ModalHost({
           ]}
         >
           <View
-            accessibilityElementsHidden={!!state.pending}
-            importantForAccessibility={
-              state.pending ? 'no-hide-descendants' : 'auto'
-            }
-            style={[styles.body, state.pending && styles.hidden]}
+            accessibilityElementsHidden={covered}
+            importantForAccessibility={covered ? 'no-hide-descendants' : 'auto'}
+            style={[styles.body, covered && styles.hidden]}
           >
             <View style={styles.header}>
               <AppText variant="heading" style={styles.grow}>
@@ -235,7 +291,14 @@ export function ModalHost({
               />
             </ScrollView>
           </View>
-          {state.pending && (
+          {request && (
+            <ConfirmDialog
+              {...request}
+              onConfirm={() => answer(true)}
+              onCancel={() => answer(false)}
+            />
+          )}
+          {!request && state.pending && (
             <View style={styles.confirm}>
               <AppText variant="heading">Rời khỏi form?</AppText>
               <AppText muted>

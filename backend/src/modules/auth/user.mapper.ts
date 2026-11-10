@@ -12,6 +12,7 @@ export function toUserDto(user: User & { _id: unknown }) {
     authProviders: user.authProviders,
     profile: user.profile,
     createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
     lastLoginAt: user.lastLoginAt,
   };
 }

@@ -12,7 +12,7 @@ import { AppText } from './AppText';
 type Props = {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   disabled?: boolean;
   loading?: boolean;
   icon?: ReactNode;
@@ -48,14 +48,17 @@ export function Button({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'primary' ? colors.surface : colors.primary}
+          color={variant === 'primary' || variant === 'danger' ? colors.surface : colors.primary}
         />
       ) : (
         icon
       )}
       <AppText
         variant="label"
-        style={[styles.label, variant === 'primary' ? styles.white : styles.green]}
+        style={[
+          styles.label,
+          variant === 'primary' || variant === 'danger' ? styles.white : styles.green,
+        ]}
       >
         {title}
       </AppText>
@@ -81,6 +84,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   ghost: { backgroundColor: 'transparent' },
+  danger: { backgroundColor: colors.error },
   white: { color: colors.surface },
   label: {flexShrink: 1, textAlign: 'center'},
   green: { color: colors.primary },

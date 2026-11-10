@@ -350,6 +350,10 @@ describe('register + verify (U01, U02)', () => {
     expect(calls[1]).toEqual({ path: '/auth/email/verify', body: { email: 'an@example.test', otp: '123456' } });
     expect(session.getState().status).toBe('authenticated');
     expect(storage.peek()).toBe('refresh-1');
+    // U05: a brand-new account is offered to complete its profile, and may skip it.
+    expect(modalOpen()).toBe(true);
+    expect(texts()).toContain('Hoàn thiện hồ sơ');
+    await press('Để sau');
     expect(modalOpen()).toBe(false);
   });
 
