@@ -1,0 +1,29 @@
+# Tự gán người duyệt theo thư mục (GitHub chỉ nhận tên tài khoản GitHub thật).
+# Dòng sau thắng dòng trước. Mặc định TV1 duyệt mọi thứ:
+*                                  @07edev
+
+# TV1 (Core/Identity, base dùng chung)
+/src/features/auth/                @07edev
+/src/features/profile/             @07edev
+/src/shared/                       @07edev
+/src/navigation/                   @07edev
+/backend/src/modules/auth/         @07edev
+/backend/src/modules/identity/     @07edev
+/backend/src/modules/audit/        @07edev
+/backend/src/modules/outbox/       @07edev
+/backend/src/modules/idempotency/  @07edev
+/backend/src/common/               @07edev
+/web-admin/                        @07edev
+
+# TV2 (Places/Taxonomy) và TV3 (Content/Uploads/Reports/Notifications):
+# bỏ dấu # và thay <github-tv2>, <github-tv3> bằng tên GitHub của họ khi đã mời vào repo,
+# rồi chỉnh đường dẫn cho khớp thư mục thật họ tạo.
+# /src/features/places/            @<github-tv2>
+# /backend/src/modules/places/     @<github-tv2>
+# /backend/src/modules/taxonomy/   @<github-tv2>
+# /src/features/community/         @<github-tv3>
+# /src/features/documents/         @<github-tv3>
+# /backend/src/modules/content/    @<github-tv3>
+# /backend/src/modules/uploads/    @<github-tv3>
+# /backend/src/modules/reports/    @<github-tv3>
+# /backend/src/modules/notifications/ @<github-tv3>

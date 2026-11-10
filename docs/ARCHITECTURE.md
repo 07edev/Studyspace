@@ -47,7 +47,7 @@ Giữ React Native CLI ở gốc để giữ Android/iOS và lệnh chạy hiệ
 
 Danh sách đầy đủ 44 operations: [TV1_API_CHECKLIST.md](TV1_API_CHECKLIST.md). Đây là bản kiểm kê theo báo cáo, chưa phải 44 API đang chạy.
 
-`createApiClient({baseUrl})` yêu cầu URL do lớp cấu hình cung cấp; hiện chưa khởi tạo client thật trong App vì chưa có Backend. HTTPS dùng cho môi trường triển khai; địa chỉ HTTP nội bộ chỉ dùng khi phát triển.
+`createApiClient({baseUrl})` yêu cầu URL do lớp cấu hình cung cấp (`src/shared/config.ts`); `SessionManager` khởi tạo client thật khi App chạy. HTTPS dùng cho môi trường triển khai; địa chỉ HTTP nội bộ chỉ dùng khi phát triển.
 
 - Response thành công có `success`, `data`, `requestId`; lỗi có code/message/details/requestId. 204 không parse body.
 - Access token và Idempotency-Key được truyền rõ ràng theo request; client không có secret hardcode.
