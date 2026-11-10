@@ -45,4 +45,18 @@ hoặc đổi quyền có hiệu lực ngay.
 - `idempotency_keys` có thêm `requestHash`, `state`, `response` so với ERD để phát lại kết quả an toàn.
 - Collection TV1: users, admin_profiles, sessions, otp_challenges, user_devices, audit_logs,
   idempotency_keys, outbox_events (xem `docs/ARCHITECTURE.md`).
-- Chưa có endpoint auth (I01), users (I02), admin (I03/I04), stats (I05), audit API (I06).
+- Đã có: 15 endpoint `/auth/*` (I01). Chưa có: users (I02), admin (I03/I04), stats (I05), audit API (I06).
+
+## Auth (I01)
+
+- Access token JWT 15 phút mang `sid` (phiên); mỗi request kiểm phiên còn hiệu lực nên logout, khóa tài khoản,
+  đổi/đặt lại mật khẩu có hiệu lực ngay. Refresh token là chuỗi ngẫu nhiên, chỉ lưu sha256, xoay vòng mỗi lần dùng;
+  dùng lại token cũ sẽ thu hồi cả phiên (`TOKEN_REUSED`).
+- MOBILE nhận `refreshToken` trong body. WEB_ADMIN nhận cookie `ss_refresh` (HttpOnly, SameSite=Strict, path `/api/v1/auth`);
+  refresh bằng cookie bắt buộc header `X-Requested-With: XMLHttpRequest`.
+- OTP: 6 số, HMAC theo secret, hết hạn 5 phút, tối đa 5 lần thử, cooldown 60 giây (429 + `Retry-After`).
+- Mật khẩu: scrypt; 10-72 ký tự, có chữ hoa, chữ thường, chữ số.
+- Mail/SMS: hiện chỉ có `DevMailService` (in OTP ra log khi không phải production, không gửi thật). Cần adapter SMTP/SMS
+  trước khi chạy thật; production hiện không gửi và không log OTP.
+- Google: đặt `GOOGLE_CLIENT_IDS`; token được xác minh chữ ký/iss/aud/exp qua `google-auth-library`.
+- Rate limit theo IP trên từng endpoint auth; đặt `RATE_LIMIT_DISABLED=true` để tắt khi dev (bị bỏ qua ở production).

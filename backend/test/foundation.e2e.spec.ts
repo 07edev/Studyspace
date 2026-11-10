@@ -63,6 +63,7 @@ describe('authentication', () => {
     const forged = new JwtService({ secret: 'another-secret-another-secret-123456' }).sign({
       sub: id,
       typ: 'access',
+      sid: 'x',
     });
     const res = await http()
       .get('/api/v1/probe/me')

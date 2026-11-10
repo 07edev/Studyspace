@@ -7,4 +7,6 @@ export type IdentityContext = {
   role: Role;
   status: AccountStatus;
   permissions: Permission[];
+  // Refresh-token family of the current login (used by logout / revoke-others).
+  sessionId?: string;
 };

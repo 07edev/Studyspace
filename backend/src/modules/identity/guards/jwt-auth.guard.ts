@@ -44,7 +44,7 @@ export class JwtAuthGuard implements CanActivate {
       // A bad token is an error even on optional routes: the client should refresh.
       throw unauthorized();
     }
-    req.identity = await this.identity.load(payload.sub);
+    req.identity = await this.identity.load(payload.sub, payload.sid);
     return true;
   }
 }

@@ -7,6 +7,9 @@ export type AppConfig = {
   refreshTtlDays: number;
   otpTtlSeconds: number;
   otpMaxAttempts: number;
+  otpCooldownSeconds: number;
+  googleClientIds: string[];
+  disableRateLimit: boolean;
   corsOrigins: string[];
 };
 
@@ -35,6 +38,14 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     refreshTtlDays: int(env.REFRESH_TTL_DAYS, 30),
     otpTtlSeconds: int(env.OTP_TTL_SECONDS, 300),
     otpMaxAttempts: int(env.OTP_MAX_ATTEMPTS, 5),
+    otpCooldownSeconds: int(env.OTP_COOLDOWN_SECONDS, 60),
+    googleClientIds: (env.GOOGLE_CLIENT_IDS ?? '')
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean),
+    // Only honoured outside production so it cannot be left on by mistake.
+    disableRateLimit:
+      env.RATE_LIMIT_DISABLED === 'true' && (env.NODE_ENV ?? 'development') !== 'production',
     corsOrigins: (env.CORS_ORIGINS ?? '')
       .split(',')
       .map(s => s.trim())

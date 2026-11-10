@@ -17,6 +17,10 @@ export class OtpChallenge {
   @Prop({ required: true })
   otpHash: string;
 
+  // Extra to ERD: new email/phone for CONTACT_CHANGE challenges.
+  @Prop({ type: String })
+  target?: string;
+
   @Prop({ default: 0 })
   attemptCount: number;
 

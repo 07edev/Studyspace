@@ -1,26 +1,26 @@
 # Danh sách API TV1
 
-Đối chiếu 44 operations từ mục 7.1 của báo cáo phân công ngày 08/11/2026. Chưa triển khai Backend; tất cả ở trạng thái TODO. Các tên DTO, scope và lỗi bên dưới được giữ theo báo cáo, chưa thay thế OpenAPI/schema cần chốt trước khi code.
+Đối chiếu 44 operations từ mục 7.1 của báo cáo phân công ngày 08/11/2026. Trạng thái: `BE DONE` = backend đã triển khai và có test e2e (UI App/Admin chưa tính); `TODO` = chưa làm. Cập nhật 10/11/2026: 15 endpoint `/auth/*` đã BE DONE. Các tên DTO, scope và lỗi bên dưới được giữ theo báo cáo, chưa thay thế OpenAPI/schema cần chốt trước khi code.
 
 Base path dự kiến: `/api/v1`. Mã 204 không có response body. Auth/scope phải được kiểm tra ở server.
 
 | Trạng thái | Method và path | Scope | Request → response data | HTTP | Lỗi | UI |
 | --- | --- | --- | --- | --- | --- | --- |
-| TODO | `POST /auth/register` | `PUBLIC` | `AuthRegister → AuthRegisterResult` | `201` | `VALIDATION_ERROR, EMAIL_ALREADY_EXISTS, PHONE_ALREADY_EXISTS, RATE_LIMITED` | `U01` |
-| TODO | `POST /auth/email/verify` | `PUBLIC` | `OtpVerify → AuthSession` | `200` | `OTP_INVALID, OTP_EXPIRED, OTP_ATTEMPTS_EXCEEDED` | `U02` |
-| TODO | `POST /auth/email/resend-otp` | `PUBLIC` | `OtpRequest → StatusMessage` | `202` | `RATE_LIMITED, OTP_COOLDOWN` | `A02,U02` |
-| TODO | `POST /auth/login` | `PUBLIC` | `AuthLogin → AuthSession` | `200` | `INVALID_CREDENTIALS, ACCOUNT_SUSPENDED, EMAIL_NOT_VERIFIED, RATE_LIMITED` | `ADM-01,U03` |
-| TODO | `POST /auth/google` | `PUBLIC` | `GoogleLogin → AuthSession` | `200` | `GOOGLE_TOKEN_INVALID, ACCOUNT_SUSPENDED, FORBIDDEN` | `U03` |
-| TODO | `POST /auth/token/refresh` | `REFRESH` | `TokenRefresh → AccessTokens` | `200` | `TOKEN_EXPIRED, TOKEN_REUSED, TOKEN_INVALID` | `U57` |
-| TODO | `POST /auth/logout` | `USER` | `none → none` | `204` | `UNAUTHORIZED` | `U48,U52` |
-| TODO | `GET /auth/me` | `USER` | `none → User` | `200` | `UNAUTHORIZED, ACCOUNT_SUSPENDED` | `U57` |
-| TODO | `POST /auth/password/forgot` | `PUBLIC` | `OtpRequest → StatusMessage` | `202` | `RATE_LIMITED` | `ADM-01,A01,U04` |
-| TODO | `POST /auth/password/verify-otp` | `PUBLIC` | `OtpVerify → ResetGrant` | `200` | `OTP_INVALID, OTP_EXPIRED, OTP_ATTEMPTS_EXCEEDED` | `ADM-01,A02,U04` |
-| TODO | `POST /auth/password/reset` | `PUBLIC` | `ResetPassword → StatusMessage` | `200` | `RESET_TOKEN_INVALID, RESET_TOKEN_EXPIRED, WEAK_PASSWORD` | `ADM-01,A03,U04` |
-| TODO | `POST /auth/password/change` | `USER` | `ChangePassword → StatusMessage` | `200` | `INVALID_CREDENTIALS, WEAK_PASSWORD, AUTH_PROVIDER_UNSUPPORTED` | `U49` |
-| TODO | `POST /auth/contact/change-request` | `USER` | `ContactChangeRequest → ContactChangeChallenge` | `202` | `CONTACT_ALREADY_EXISTS, RATE_LIMITED, VALIDATION_ERROR` | `U46` |
-| TODO | `POST /auth/contact/change-confirm` | `USER` | `ContactChangeConfirm → User` | `200` | `OTP_INVALID, OTP_EXPIRED, CONTACT_ALREADY_EXISTS` | `U47` |
-| TODO | `POST /auth/account/deletion-requests` | `USER` | `AccountDeleteRequest → StatusMessage` | `202` | `REAUTH_REQUIRED, VALIDATION_ERROR` | `U48,U53` |
+| BE DONE | `POST /auth/register` | `PUBLIC` | `AuthRegister → AuthRegisterResult` | `201` | `VALIDATION_ERROR, EMAIL_ALREADY_EXISTS, PHONE_ALREADY_EXISTS, RATE_LIMITED` | `U01` |
+| BE DONE | `POST /auth/email/verify` | `PUBLIC` | `OtpVerify → AuthSession` | `200` | `OTP_INVALID, OTP_EXPIRED, OTP_ATTEMPTS_EXCEEDED` | `U02` |
+| BE DONE | `POST /auth/email/resend-otp` | `PUBLIC` | `OtpRequest → StatusMessage` | `202` | `RATE_LIMITED, OTP_COOLDOWN` | `A02,U02` |
+| BE DONE | `POST /auth/login` | `PUBLIC` | `AuthLogin → AuthSession` | `200` | `INVALID_CREDENTIALS, ACCOUNT_SUSPENDED, EMAIL_NOT_VERIFIED, RATE_LIMITED` | `ADM-01,U03` |
+| BE DONE | `POST /auth/google` | `PUBLIC` | `GoogleLogin → AuthSession` | `200` | `GOOGLE_TOKEN_INVALID, ACCOUNT_SUSPENDED, FORBIDDEN` | `U03` |
+| BE DONE | `POST /auth/token/refresh` | `REFRESH` | `TokenRefresh → AccessTokens` | `200` | `TOKEN_EXPIRED, TOKEN_REUSED, TOKEN_INVALID` | `U57` |
+| BE DONE | `POST /auth/logout` | `USER` | `none → none` | `204` | `UNAUTHORIZED` | `U48,U52` |
+| BE DONE | `GET /auth/me` | `USER` | `none → User` | `200` | `UNAUTHORIZED, ACCOUNT_SUSPENDED` | `U57` |
+| BE DONE | `POST /auth/password/forgot` | `PUBLIC` | `OtpRequest → StatusMessage` | `202` | `RATE_LIMITED` | `ADM-01,A01,U04` |
+| BE DONE | `POST /auth/password/verify-otp` | `PUBLIC` | `OtpVerify → ResetGrant` | `200` | `OTP_INVALID, OTP_EXPIRED, OTP_ATTEMPTS_EXCEEDED` | `ADM-01,A02,U04` |
+| BE DONE | `POST /auth/password/reset` | `PUBLIC` | `ResetPassword → StatusMessage` | `200` | `RESET_TOKEN_INVALID, RESET_TOKEN_EXPIRED, WEAK_PASSWORD` | `ADM-01,A03,U04` |
+| BE DONE | `POST /auth/password/change` | `USER` | `ChangePassword → StatusMessage` | `200` | `INVALID_CREDENTIALS, WEAK_PASSWORD, AUTH_PROVIDER_UNSUPPORTED` | `U49` |
+| BE DONE | `POST /auth/contact/change-request` | `USER` | `ContactChangeRequest → ContactChangeChallenge` | `202` | `CONTACT_ALREADY_EXISTS, RATE_LIMITED, VALIDATION_ERROR` | `U46` |
+| BE DONE | `POST /auth/contact/change-confirm` | `USER` | `ContactChangeConfirm → User` | `200` | `OTP_INVALID, OTP_EXPIRED, CONTACT_ALREADY_EXISTS` | `U47` |
+| BE DONE | `POST /auth/account/deletion-requests` | `USER` | `AccountDeleteRequest → StatusMessage` | `202` | `REAUTH_REQUIRED, VALIDATION_ERROR` | `U48,U53` |
 | TODO | `GET /users/me` | `USER` | `none → User` | `200` | `UNAUTHORIZED` | `USR-35,U05,U18,U26,U27,U32,U33,U43,U46,U48,U50,U51` |
 | TODO | `PATCH /users/me/profile` | `USER` | `ProfilePatch → User` | `200` | `VALIDATION_ERROR, UNIVERSITY_MAJOR_MISMATCH, FILE_NOT_READY` | `U05,U46` |
 | TODO | `GET /users/me/privacy` | `USER` | `none → PrivacySettings` | `200` | `UNAUTHORIZED` | `U48,U50` |
