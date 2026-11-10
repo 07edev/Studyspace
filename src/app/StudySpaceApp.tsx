@@ -8,8 +8,9 @@ import { ModalCoordinator, useModal } from '../navigation/ModalCoordinator';
 import { ModalHost } from '../navigation/ModalHost';
 import { AuthProvider, useSession } from '../shared/auth/AuthProvider';
 import type { SessionManager } from '../shared/auth/sessionManager';
+import { QueryProvider } from '../shared/query';
 import { colors } from '../shared/theme/tokens';
-import { LoadingState, Screen, ToastProvider } from '../shared/ui';
+import { ConfirmProvider, LoadingState, Screen, ToastProvider } from '../shared/ui';
 
 const theme = {
   ...DefaultTheme,
@@ -31,9 +32,13 @@ export default function StudySpaceApp({ session }: { session?: SessionManager })
       <StatusBar barStyle="dark-content" />
       <ToastProvider>
         <AuthProvider manager={session}>
-          <ModalCoordinator>
-            <Shell />
-          </ModalCoordinator>
+          <QueryProvider>
+            <ConfirmProvider>
+              <ModalCoordinator>
+                <Shell />
+              </ModalCoordinator>
+            </ConfirmProvider>
+          </QueryProvider>
         </AuthProvider>
       </ToastProvider>
     </SafeAreaProvider>

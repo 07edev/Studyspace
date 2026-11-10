@@ -1,21 +1,18 @@
-import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 import {
   Bookmark,
-  ChevronRight,
   FileText,
   Heart,
   Info,
   Send,
   Settings,
-  UserRound,
   type LucideIcon,
 } from 'lucide-react-native';
 import { useModal } from '../../navigation/ModalCoordinator';
 import type { FeatureId } from '../../navigation/types';
-import { useSession } from '../../shared/auth/AuthProvider';
-import { colors } from '../../shared/theme/tokens';
-import { AppText, Button, Card, Screen } from '../../shared/ui';
+import { useSession, useSessionManager } from '../../shared/auth/AuthProvider';
+import { AppText, Avatar, Button, Card, MenuGroup, MenuRow, Screen } from '../../shared/ui';
 import { features } from '../pending/features';
 
 const links: { feature: FeatureId; Icon: LucideIcon }[] = [
@@ -29,7 +26,16 @@ const links: { feature: FeatureId; Icon: LucideIcon }[] = [
 export function ProfileScreen() {
   const { open } = useModal();
   const session = useSession();
+  const manager = useSessionManager();
   const user = session.status === 'authenticated' ? session.user : undefined;
+  const signedIn = !!user;
+  // Show what the server has, not just what the login response carried. Failing quietly is
+  // fine: the cached profile stays on screen.
+  useEffect(() => {
+    if (signedIn) {
+      manager.refreshUser().catch(() => undefined);
+    }
+  }, [signedIn, manager]);
   return (
     <Screen>
       <View style={styles.header}>
@@ -39,9 +45,7 @@ export function ProfileScreen() {
         <AppText variant="title">Cá nhân</AppText>
       </View>
       <Card style={styles.profile}>
-        <View style={styles.avatar}>
-          <UserRound size={32} color={colors.primary} />
-        </View>
+        <Avatar uri={user?.profile.avatarUrl} name={user?.profile.displayName} size={74} />
         {user ? (
           <>
             <AppText variant="heading">
@@ -50,6 +54,14 @@ export function ProfileScreen() {
             <AppText muted style={styles.center}>
               {user.email}
             </AppText>
+            {user.profile.bio ? (
+              <AppText style={styles.center}>{user.profile.bio}</AppText>
+            ) : null}
+            <Button
+              variant="secondary"
+              title="Chỉnh sửa hồ sơ"
+              onPress={() => open({ name: 'profile-edit' })}
+            />
           </>
         ) : (
           <>
@@ -67,12 +79,12 @@ export function ProfileScreen() {
       <AppText variant="label" muted>
         GÓC HỌC CỦA TÔI
       </AppText>
-      <View style={styles.group}>
+      <MenuGroup>
         {links.map(({ feature, Icon }) => (
-          <Pressable
+          <MenuRow
             key={feature}
-            accessibilityRole="button"
-            style={styles.row}
+            label={features[feature].title}
+            Icon={Icon}
             onPress={() =>
               user
                 ? // The owning team (TV2/TV3) replaces this pending screen with the real one.
@@ -84,33 +96,13 @@ export function ProfileScreen() {
                     ].title.toLocaleLowerCase('vi')}.`,
                   })
             }
-          >
-            <Icon size={21} color={colors.primary} />
-            <AppText style={styles.grow}>{features[feature].title}</AppText>
-            <ChevronRight size={18} color={colors.muted} />
-          </Pressable>
+          />
         ))}
-      </View>
-      <View style={styles.group}>
-        <Pressable
-          accessibilityRole="button"
-          style={styles.row}
-          onPress={() => open({ name: 'settings' })}
-        >
-          <Settings size={21} color={colors.primary} />
-          <AppText style={styles.grow}>Cài đặt</AppText>
-          <ChevronRight size={18} color={colors.muted} />
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          style={styles.row}
-          onPress={() => open({ name: 'about' })}
-        >
-          <Info size={21} color={colors.primary} />
-          <AppText style={styles.grow}>Về StudySpace</AppText>
-          <ChevronRight size={18} color={colors.muted} />
-        </Pressable>
-      </View>
+      </MenuGroup>
+      <MenuGroup>
+        <MenuRow label="Cài đặt" Icon={Settings} onPress={() => open({ name: 'settings' })} />
+        <MenuRow label="Về StudySpace" Icon={Info} onPress={() => open({ name: 'about' })} />
+      </MenuGroup>
       <AppText variant="caption" muted style={styles.center}>
         Một không gian nhỏ. Nhiều điều để khám phá.
       </AppText>
@@ -120,28 +112,5 @@ export function ProfileScreen() {
 const styles = StyleSheet.create({
   header: { gap: 8 },
   profile: { alignItems: 'center', gap: 16 },
-  avatar: {
-    width: 74,
-    height: 74,
-    borderRadius: 26,
-    backgroundColor: colors.primarySoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   center: { textAlign: 'center' },
-  group: {
-    backgroundColor: colors.surface,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
-    overflow: 'hidden',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 18,
-    gap: 12,
-    minHeight: 60,
-  },
-  grow: { flex: 1 },
 });

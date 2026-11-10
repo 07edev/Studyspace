@@ -1,3 +1,5 @@
+import type { ContactChallenge } from '../shared/contracts/auth';
+
 export type AppTabParamList = {
   Home: undefined;
   Explore: undefined;
@@ -26,6 +28,15 @@ export type ModalRoute =
   | { name: 'session-ended'; reason: 'expired' | 'suspended' }
   | { name: 'auth-required'; reason: string }
   | { name: 'feature'; feature: FeatureId }
+  // U46 edit profile / U05 complete profile right after sign-up.
+  | { name: 'profile-edit'; mode?: 'edit' | 'complete' }
+  // U47: confirm an email change with the code that was sent.
+  | { name: 'contact-verify'; challenge: ContactChallenge }
   | { name: 'settings' }
+  | { name: 'change-password' }
+  | { name: 'privacy' }
+  | { name: 'notifications' }
+  | { name: 'logout-confirm' }
+  | { name: 'delete-account' }
   | { name: 'about' };
 export type ModalSize = 'C' | 'L' | 'F';

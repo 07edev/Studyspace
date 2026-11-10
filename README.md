@@ -60,6 +60,7 @@ cd backend && npm run typecheck && npm test              # Backend (cần MongoD
 ## Tài liệu
 
 - [docs/TEAM_WORKFLOW.md](docs/TEAM_WORKFLOW.md): cách làm việc nhóm với Git (đọc đầu tiên)
+- [docs/COMPONENTS.md](docs/COMPONENTS.md): component và công cụ dùng chung của App (đọc trước khi viết giao diện)
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): kiến trúc App, điều hướng, modal, API client
 - [backend/README.md](backend/README.md): decorator và dịch vụ dùng chung cho TV2/TV3
 - [docs/TV1_API_CHECKLIST.md](docs/TV1_API_CHECKLIST.md): danh sách API của TV1 và trạng thái

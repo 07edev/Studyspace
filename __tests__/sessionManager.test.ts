@@ -217,3 +217,43 @@ test('logout tells the server to revoke the session', async () => {
   await manager.logout();
   expect(calls[0]).toMatchObject({ path: '/auth/logout', auth: 'Bearer access-1' });
 });
+
+test('a 401 that is a business answer (wrong current password) neither refreshes nor ends the session', async () => {
+  const { manager, calls, storage } = setup({
+    '/auth/password/change': () => fail(401, 'INVALID_CREDENTIALS'),
+    '/auth/token/refresh': () => ok({ accessToken: 'never', tokenType: 'Bearer', expiresInSeconds: 900, refreshToken: 'never' }),
+  });
+  await manager.startSession(session('access-1', 'refresh-1'));
+  await expect(manager.request('/auth/password/change', { method: 'POST', body: {} })).rejects.toMatchObject({
+    code: 'INVALID_CREDENTIALS',
+  });
+  expect(calls.map(c => c.path)).toEqual(['/auth/password/change']);
+  expect(manager.getState().status).toBe('authenticated');
+  expect(storage.peek()).toBe('refresh-1');
+});
+
+test('an expired access token still refreshes once and retries', async () => {
+  let first = true;
+  const { manager, calls } = setup({
+    '/users/me': () => {
+      if (first) {
+        first = false;
+        return fail(401, 'UNAUTHORIZED');
+      }
+      return ok(user);
+    },
+    '/auth/token/refresh': () => ok({ accessToken: 'access-2', tokenType: 'Bearer', expiresInSeconds: 900, refreshToken: 'refresh-2' }),
+  });
+  await manager.startSession(session('access-1', 'refresh-1'));
+  await expect(manager.request('/users/me')).resolves.toMatchObject({ id: 'u1' });
+  expect(calls.map(c => c.path)).toEqual(['/users/me', '/auth/token/refresh', '/users/me']);
+});
+
+test('setUser replaces the cached user only while signed in; refreshUser re-reads the server copy', async () => {
+  const { manager } = setup({ '/users/me': () => ok({ ...user, profile: { displayName: 'Mới' } }) });
+  manager.setUser({ ...user, profile: { displayName: 'Ignored' } });
+  expect(manager.getState().status).toBe('restoring'); // untouched: nobody is signed in
+  await manager.startSession(session('access-1', 'refresh-1'));
+  expect((await manager.refreshUser()).profile.displayName).toBe('Mới');
+  expect(manager.getState().user?.profile.displayName).toBe('Mới');
+});

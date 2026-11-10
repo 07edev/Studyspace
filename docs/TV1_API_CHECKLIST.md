@@ -1,6 +1,6 @@
 # Danh sách API TV1
 
-Đối chiếu 44 operations từ mục 7.1 của báo cáo phân công ngày 08/11/2026. Trạng thái: `BE DONE` = backend đã triển khai và có test e2e (UI App/Admin chưa tính); `TODO` = chưa làm. Cập nhật 10/11/2026: 15 endpoint `/auth/*` đã BE DONE. Các tên DTO, scope và lỗi bên dưới được giữ theo báo cáo, chưa thay thế OpenAPI/schema cần chốt trước khi code.
+Đối chiếu 44 operations từ mục 7.1 của báo cáo phân công ngày 08/11/2026. Trạng thái: `BE DONE` = backend đã triển khai và có test e2e (UI App/Admin chưa tính); `TODO` = chưa làm. Cập nhật 10/11/2026: 15 endpoint `/auth/*` và 9 endpoint `/users/*` đã BE DONE (24/44; `POST /users/me/devices` trả thêm `deviceId` ngoài `message` để App xóa thiết bị). Các tên DTO, scope và lỗi bên dưới được giữ theo báo cáo, chưa thay thế OpenAPI/schema cần chốt trước khi code.
 
 Base path dự kiến: `/api/v1`. Mã 204 không có response body. Auth/scope phải được kiểm tra ở server.
 
@@ -21,15 +21,15 @@ Base path dự kiến: `/api/v1`. Mã 204 không có response body. Auth/scope p
 | BE DONE | `POST /auth/contact/change-request` | `USER` | `ContactChangeRequest → ContactChangeChallenge` | `202` | `CONTACT_ALREADY_EXISTS, RATE_LIMITED, VALIDATION_ERROR` | `U46` |
 | BE DONE | `POST /auth/contact/change-confirm` | `USER` | `ContactChangeConfirm → User` | `200` | `OTP_INVALID, OTP_EXPIRED, CONTACT_ALREADY_EXISTS` | `U47` |
 | BE DONE | `POST /auth/account/deletion-requests` | `USER` | `AccountDeleteRequest → StatusMessage` | `202` | `REAUTH_REQUIRED, VALIDATION_ERROR` | `U48,U53` |
-| TODO | `GET /users/me` | `USER` | `none → User` | `200` | `UNAUTHORIZED` | `USR-35,U05,U18,U26,U27,U32,U33,U43,U46,U48,U50,U51` |
-| TODO | `PATCH /users/me/profile` | `USER` | `ProfilePatch → User` | `200` | `VALIDATION_ERROR, UNIVERSITY_MAJOR_MISMATCH, FILE_NOT_READY` | `U05,U46` |
-| TODO | `GET /users/me/privacy` | `USER` | `none → PrivacySettings` | `200` | `UNAUTHORIZED` | `U48,U50` |
-| TODO | `PATCH /users/me/privacy` | `USER` | `PrivacySettings → PrivacySettings` | `200` | `VALIDATION_ERROR` | `U50` |
-| TODO | `GET /users/me/notification-settings` | `USER` | `none → NotificationSettings` | `200` | `UNAUTHORIZED` | `U48,U51` |
-| TODO | `PATCH /users/me/notification-settings` | `USER` | `NotificationSettings → NotificationSettings` | `200` | `VALIDATION_ERROR` | `U51` |
-| TODO | `GET /users/{userId}/public-profile` | `PUBLIC` | `none → PublicAuthor` | `200` | `NOT_FOUND` | `—` |
-| TODO | `POST /users/me/devices` | `USER` | `NotificationDevice → StatusMessage` | `201` | `VALIDATION_ERROR` | `—` |
-| TODO | `DELETE /users/me/devices/{deviceId}` | `USER` | `none → none` | `204` | `NOT_FOUND` | `U52` |
+| BE DONE | `GET /users/me` | `USER` | `none → User` | `200` | `UNAUTHORIZED` | `USR-35,U05,U18,U26,U27,U32,U33,U43,U46,U48,U50,U51` |
+| BE DONE | `PATCH /users/me/profile` | `USER` | `ProfilePatch → User` | `200` | `VALIDATION_ERROR, UNIVERSITY_MAJOR_MISMATCH, FILE_NOT_READY` | `U05,U46` |
+| BE DONE | `GET /users/me/privacy` | `USER` | `none → PrivacySettings` | `200` | `UNAUTHORIZED` | `U48,U50` |
+| BE DONE | `PATCH /users/me/privacy` | `USER` | `PrivacySettings → PrivacySettings` | `200` | `VALIDATION_ERROR` | `U50` |
+| BE DONE | `GET /users/me/notification-settings` | `USER` | `none → NotificationSettings` | `200` | `UNAUTHORIZED` | `U48,U51` |
+| BE DONE | `PATCH /users/me/notification-settings` | `USER` | `NotificationSettings → NotificationSettings` | `200` | `VALIDATION_ERROR` | `U51` |
+| BE DONE | `GET /users/{userId}/public-profile` | `PUBLIC` | `none → PublicAuthor` | `200` | `NOT_FOUND` | `—` |
+| BE DONE | `POST /users/me/devices` | `USER` | `NotificationDevice → StatusMessage` | `201` | `VALIDATION_ERROR` | `—` |
+| BE DONE | `DELETE /users/me/devices/{deviceId}` | `USER` | `none → none` | `204` | `NOT_FOUND` | `U52` |
 | TODO | `GET /admin/users` | `ADMIN:USERS.READ` | `none → Page<User>` | `200` | `FORBIDDEN, QUERY_INVALID` | `ADM-03,ADM-04,A06,A07` |
 | TODO | `GET /admin/users/{userId}` | `ADMIN:USERS.READ` | `none → UserAdminDetail` | `200` | `NOT_FOUND, FORBIDDEN` | `ADM-04,A06,A07` |
 | TODO | `PATCH /admin/users/{userId}/status` | `ADMIN:USERS.UPDATE` | `AdminUserStatus → User` | `200` | `FORBIDDEN, INVALID_STATE_TRANSITION, VALIDATION_ERROR` | `ADM-03,A04,A05,A48` |

@@ -94,9 +94,9 @@ Không lưu password/OTP/refresh token dạng rõ. Mobile token storage sẽ dù
 
 ## Những phần còn thiếu của base
 
-- Backend NestJS/MongoDB và Web Admin.
-- OpenAPI chi tiết, DTO/validation nghiệp vụ, persistence/schema, email/Google credentials.
-- Secure token storage, refresh/session, AuthGate/PermissionGate thật.
+- Web Admin (`web-admin/`) và các component dùng chung của nó.
+- PermissionGate thật cho App; U19 (quay lại hành động sau đăng nhập).
 - Yêu cầu quyền vị trí/thông báo theo luồng chức năng; hiện không yêu cầu nên từ chối quyền không chặn chế độ Khách.
-- Query cache, UploadPicker/FilePicker/Progress và các UI dùng chung bổ sung theo nhu cầu domain.
+- Thư viện chọn ảnh/tệp native và `FileUploader` thật (TV3); chưa có push token (cần Firebase).
+- Component dùng chung của App, query cache và UploadPicker đã có: xem [COMPONENTS.md](COMPONENTS.md).
 - Kiểm chứng iOS trên macOS và form thật có bàn phím/dirty state.
