@@ -78,6 +78,8 @@ export type StartOptions = {
   config?: Partial<AppConfig>;
   // Stub for Google ID-token verification (the real one calls Google).
   google?: (idToken: string) => Promise<GoogleProfile>;
+  // Replace providers (e.g. the TV2/TV3 ports) with test doubles.
+  overrides?: { provide: unknown; useValue: unknown }[];
 };
 
 export type TestEnv = {
@@ -131,6 +133,9 @@ export async function startEnv(options: StartOptions = {}): Promise<TestEnv> {
     builder = builder
       .overrideProvider(GoogleTokenVerifier)
       .useValue({ verify } satisfies GoogleTokenVerifier);
+  }
+  for (const override of options.overrides ?? []) {
+    builder = builder.overrideProvider(override.provide as never).useValue(override.useValue);
   }
   const moduleRef = await builder.compile();
   const app = configureApp(

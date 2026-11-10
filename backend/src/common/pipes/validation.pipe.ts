@@ -22,6 +22,9 @@ const MESSAGES: Record<string, (original: string) => string> = {
   min: m => `Giá trị tối thiểu là ${number(m)}.`,
   max: m => `Giá trị tối đa là ${number(m)}.`,
   matches: () => 'Giá trị không đúng định dạng.',
+  arrayMaxSize: () => 'Danh sách có quá nhiều phần tử.',
+  arrayUnique: () => 'Danh sách có phần tử bị trùng.',
+  nestedValidation: () => 'Giá trị không hợp lệ.',
   whitelistValidation: () => 'Trường này không được hỗ trợ.',
 };
 

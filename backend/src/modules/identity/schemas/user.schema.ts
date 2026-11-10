@@ -36,7 +36,7 @@ export class User {
 
   @Prop({
     type: Object,
-    default: { visibility: 'PUBLIC', showUniversity: true, showMajor: true },
+    default: { profileVisibility: 'PUBLIC', showUniversity: true, showMajor: true },
   })
   privacy: Record<string, unknown>;
 
