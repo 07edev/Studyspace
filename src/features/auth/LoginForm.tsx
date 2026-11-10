@@ -4,6 +4,7 @@ import { useModal } from '../../navigation/ModalCoordinator';
 import { useSessionManager } from '../../shared/auth/AuthProvider';
 import { AppText, Button, TextField, useToast } from '../../shared/ui';
 import { authApi } from './authApi';
+import { GoogleSignInButton } from './GoogleSignInButton';
 import { EMAIL_PATTERN, useDirtyGuard, useSubmit } from './formHooks';
 
 // U03 - Dang nhap
@@ -83,6 +84,7 @@ export function LoginForm({ onAuthenticated }: { onAuthenticated: () => void }) 
         </AppText>
       )}
       <Button title="Đăng nhập" onPress={onSubmit} loading={submit.pending} />
+      <GoogleSignInButton onAuthenticated={onAuthenticated} />
       {unverified && (
         <Button
           title="Xác minh email"

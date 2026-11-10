@@ -10,3 +10,8 @@ const DEV_API =
 const PROD_API = 'https://api.studyspace.example/api/v1';
 
 export const API_BASE_URL = __DEV__ ? DEV_API : PROD_API;
+
+// Google OAuth *Web* client id (public, not a secret). The backend lists the same id in
+// GOOGLE_CLIENT_IDS. See docs/GOOGLE_SIGNIN_SETUP.md.
+export const GOOGLE_WEB_CLIENT_ID =
+  '596700134846-9jtprv8pko2jp4geps79qgdk2tb26rdi.apps.googleusercontent.com';

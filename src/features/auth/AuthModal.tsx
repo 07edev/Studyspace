@@ -26,7 +26,7 @@ export function AuthModal({
     case 'login':
       return <LoginForm onAuthenticated={onAuthenticated} />;
     case 'register':
-      return <RegisterForm />;
+      return <RegisterForm onAuthenticated={onAuthenticated} />;
     case 'verify':
       return (
         <VerifyEmailForm

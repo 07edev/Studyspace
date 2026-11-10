@@ -34,6 +34,11 @@ export const authApi = (session: SessionManager) => ({
       method: 'POST',
       body: { ...body, client: 'MOBILE' },
     }),
+  loginWithGoogle: (idToken: string) =>
+    session.publicRequest<AuthSession>('/auth/google', {
+      method: 'POST',
+      body: { idToken, client: 'MOBILE' },
+    }),
   forgotPassword: (email: string) =>
     session.publicRequest<StatusMessage>('/auth/password/forgot', {
       method: 'POST',

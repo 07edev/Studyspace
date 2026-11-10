@@ -5,6 +5,7 @@
 import React from 'react';
 import { Modal, TextInput } from 'react-native';
 import ReactTestRenderer from 'react-test-renderer';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import StudySpaceApp from '../src/app/StudySpaceApp';
 import { HomeScreen } from '../src/features/home/HomeScreen';
 import { WelcomeScreen } from '../src/features/welcome/WelcomeScreen';
@@ -237,6 +238,73 @@ describe('login (U03)', () => {
     await press('Xác minh email');
     expect(texts()).toContain('an@example.test');
     expect(tree.root.findAllByType(Modal)).toHaveLength(1);
+  });
+});
+
+describe('google sign-in (U03)', () => {
+  const signIn = GoogleSignin.signIn as unknown as jest.Mock;
+  beforeEach(() => signIn.mockReset());
+
+  test('sends the Google idToken to the backend and opens the app', async () => {
+    signIn.mockResolvedValue({ type: 'success', data: { idToken: 'g'.repeat(40) } });
+    const { session, storage, calls } = makeApp({
+      '/auth/google': () => ok({ user, tokens: tokens(7) }),
+    });
+    await mount(session);
+    await press('Đăng nhập');
+    await press('Tiếp tục với Google');
+    expect(calls).toEqual([
+      { path: '/auth/google', body: { idToken: 'g'.repeat(40), client: 'MOBILE' } },
+    ]);
+    expect(session.getState()).toMatchObject({ status: 'authenticated', user });
+    expect(storage.peek()).toBe('refresh-7');
+    expect(modalOpen()).toBe(false);
+    expect(tree.root.findAllByType(HomeScreen)).toHaveLength(1);
+  });
+
+  test('closing the Google account picker changes nothing and shows no error', async () => {
+    signIn.mockResolvedValue({ type: 'cancelled', data: null });
+    const { session, calls } = makeApp({});
+    await mount(session);
+    await press('Đăng nhập');
+    await press('Tiếp tục với Google');
+    expect(calls).toHaveLength(0);
+    expect(session.getState().status).toBe('guest');
+    expect(modalOpen()).toBe(true);
+    expect(texts()).not.toContain('Không đăng nhập được');
+  });
+
+  test('shows the server message when the account is suspended', async () => {
+    signIn.mockResolvedValue({ type: 'success', data: { idToken: 'g'.repeat(40) } });
+    const { session } = makeApp({
+      '/auth/google': () =>
+        failure(403, 'ACCOUNT_SUSPENDED', 'Tài khoản của bạn đang bị khóa.'),
+    });
+    await mount(session);
+    await press('Đăng nhập');
+    await press('Tiếp tục với Google');
+    expect(texts()).toContain('Tài khoản của bạn đang bị khóa.');
+    expect(session.getState().status).toBe('guest');
+    expect(modalOpen()).toBe(true);
+  });
+
+  test('explains a Google failure in Vietnamese without calling the backend', async () => {
+    signIn.mockRejectedValue(Object.assign(new Error('10'), { code: '10' }));
+    const { session, calls } = makeApp({});
+    await mount(session);
+    await press('Đăng nhập');
+    await press('Tiếp tục với Google');
+    expect(calls).toHaveLength(0);
+    expect(texts()).toContain('Không đăng nhập được bằng Google');
+  });
+
+  test('is also offered on the sign-up form', async () => {
+    const { session } = makeApp({});
+    await mount(session);
+    await press('Đăng nhập');
+    await press('Chưa có tài khoản? Đăng ký');
+    expect(texts()).toContain('Tạo tài khoản');
+    expect(button('Tiếp tục với Google')).toBeDefined();
   });
 });
 

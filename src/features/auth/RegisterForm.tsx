@@ -5,6 +5,7 @@ import { useSessionManager } from '../../shared/auth/AuthProvider';
 import { colors } from '../../shared/theme/tokens';
 import { AppText, Button, TextField } from '../../shared/ui';
 import { authApi } from './authApi';
+import { GoogleSignInButton } from './GoogleSignInButton';
 import { EMAIL_PATTERN, useDirtyGuard, useSubmit } from './formHooks';
 
 export const PASSWORD_HINT = 'Tối thiểu 10 ký tự, gồm chữ hoa, chữ thường và chữ số.';
@@ -14,7 +15,7 @@ export const passwordIssue = (value: string) =>
     : PASSWORD_HINT;
 
 // U01 - Dang ky
-export function RegisterForm() {
+export function RegisterForm({ onAuthenticated }: { onAuthenticated: () => void }) {
   const session = useSessionManager();
   const api = useMemo(() => authApi(session), [session]);
   const { open, setDirty } = useModal();
@@ -129,6 +130,7 @@ export function RegisterForm() {
         </AppText>
       )}
       <Button title="Tạo tài khoản" onPress={onSubmit} loading={submit.pending} />
+      <GoogleSignInButton onAuthenticated={onAuthenticated} />
       <Button
         variant="ghost"
         title="Đã có tài khoản? Đăng nhập"
