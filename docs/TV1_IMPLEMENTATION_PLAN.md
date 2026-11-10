@@ -86,7 +86,7 @@ Audit writer, identity context và error contract được làm trong M1/M2 đ�
 | P00 | DONE | Lưu kế hoạch và hướng dẫn đọc/cập nhật kế hoạch trong repository |
 | P01 | DONE | Baseline lint, typecheck và 1 test đạt; emulator-5554 đang kết nối; người dùng xác nhận App đã chạy Android |
 | P02 | DONE | Chốt cấu trúc BE/Web/App, bảng contract, role/permission, response/error/pagination và các interface liên nhóm — quyết định ghi tại mục 2.1; field chi tiết DTO chốt dần theo từng task khi dựng Swagger |
-| B01 | TODO | NestJS bootstrap, Config, Mongo, validation, requestId, filters, Swagger, /api/v1, health check; có cấu hình mẫu và hướng dẫn chạy |
+| B01 | DONE | NestJS bootstrap, Config, Mongo, validation, requestId, filters, Swagger, /api/v1, health check; có cấu hình mẫu và hướng dẫn chạy. Bằng chứng 10/11/2026: `backend/` build + typecheck sạch, 24/24 test e2e đạt trên MongoDB local (lỗi 401/403/422 đúng định dạng, JWT/permission, idempotency, audit append-only + redact, outbox), chạy thật /health và /api/docs; hướng dẫn trong `backend/README.md`. Chưa gồm endpoint nghiệp vụ (thuộc I01+) |
 | B02 | TODO | React Web Admin router/layout/menu, auth và permission guards, form/table/modal cơ bản; đăng nhập và chuyển trang đúng quyền |
 | B03 | DOING | Welcome, 5 tab, route types, modal coordinator, auth routes, token storage; back/dismiss đúng, không chồng modal nhập liệu |
 | B04 | DOING | Theme/tokens, Button/Input/Card/Text/Toast/Confirm/Loading/Empty/Error, API client typed và error mapper; web/mobile có component phù hợp nền tảng, chung contract và tokens khi khả thi |
@@ -210,8 +210,8 @@ Thực hiện tuần tự, cập nhật mục này sau mỗi đợt:
 
 1. Commit phần base App hiện có (B03/B04) sau khi chạy lại lint/typecheck/test.
 2. Loại trừ `backend/` và `web-admin/` khỏi `tsconfig.json`, `.eslintrc.js`, `jest.config.js`, `metro.config.js` của App.
-3. B01: dựng `backend/` theo mục 5.1 M1, gồm schema TV1 theo ERD, AuditService, IdempotencyInterceptor, OutboxService.
-4. B02: dựng `web-admin/` shell + PermissionGate.
+3. B01: hoàn tất (xem nhật ký).
+4. B02: dựng `web-admin/` shell + PermissionGate (React + Vite, tách package, đã loại khỏi cấu hình App).
 5. Bổ sung query cache và các primitive còn thiếu cho App; sau đó vào M2 (I01/I07).
 
 ## 11. Nhật ký tiến độ và quyết định
@@ -221,5 +221,6 @@ Thực hiện tuần tự, cập nhật mục này sau mỗi đợt:
 | 10/11/2026 | Khảo sát | Đọc ba tài liệu, kiểm tra repo React Native CLI và App mẫu | Đã đọc package/App; chưa chạy build hoặc kiểm thử | P00 |
 | 10/11/2026 | P00 | Tạo kế hoạch này và AGENTS.md để các lần triển khai đọc và cập nhật | Chỉ thay đổi tài liệu; chưa triển khai nghiệp vụ | P01 |
 | 10/11/2026 | P02 | Đối chiếu ERD dbdiagram + báo cáo PDF; chốt quyết định mục 2.1, thêm lộ trình mục 5.1 M1–M6 | Chỉ thay đổi tài liệu; chưa có code backend/web-admin | Commit base App, rồi B01 |
+| 10/11/2026 | B01 | Dựng `backend/` (NestJS 11, Mongoose 9, TS 5.9, Vitest), schema ERD, guards, idempotency, audit, outbox, tests e2e | `tsc`/build sạch; 24/24 test đạt trên MongoDB local; smoke chạy thật /health, 404 đúng envelope, /api/docs 200; App lint/typecheck/11 test vẫn đạt. Lỗi đã sửa: APP_CONFIG không inject được vào IdentityModule (nay có ConfigModule toàn cục); `@Prop` kiểu union/ObjectId phải khai báo `type` rõ. Quyết định: Nest 11 vì Nest 12 chỉ ESM nên Jest không nạp được; Vitest thay Jest vì driver MongoDB 7 lỗi handshake trong vm sandbox của Jest (mongodb-memory-server cũng bị) | Commit, rồi B02 (web-admin) |
 
 Mỗi lần cập nhật cần ghi: task đang làm, file/phần chức năng đã thay đổi, kiểm tra đã chạy và kết quả, phụ thuộc còn chờ, bước tiếp theo. Nếu thay đổi phạm vi hoặc quyết định thiết kế, bổ sung lý do và task bị ảnh hưởng.
