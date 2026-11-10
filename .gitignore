@@ -73,3 +73,7 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+# Local dependency cache and verification artifacts
+.cache/
+artifacts/
+
