@@ -1,97 +1,74 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# StudySpace (G1)
 
-# Getting Started
+Ứng dụng tìm nơi học, chia sẻ tài liệu và cộng đồng học tập. Nhóm 3 người; repo gồm ba phần:
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+| Thư mục | Nội dung | Công nghệ |
+| --- | --- | --- |
+| `/` (gốc), `src/`, `android/`, `ios/` | App di động | React Native CLI 0.88, TypeScript |
+| `backend/` | API `/api/v1` | NestJS 11, MongoDB (Mongoose 9) |
+| `web-admin/` | Web quản trị (chưa tạo) | React + Vite (dự kiến) |
 
-## Step 1: Start Metro
+Phạm vi G1: màn Welcome + 5 tab, không Drawer. Không có booking, thanh toán, gói đăng ký, chat realtime.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Cài đặt lần đầu
 
-To start the Metro dev server, run the following command from the root of your React Native project:
-
-```sh
-# Using npm
-npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+Yêu cầu: Node.js >= 22.11, JDK 17+, Android Studio + SDK, MongoDB đang chạy
+(`mongodb://127.0.0.1:27017` hoặc Atlas). Làm theo
+[Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) của React Native nếu chưa có Android.
 
 ```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+git clone https://github.com/07edev/Studyspace.git
+cd Studyspace
+npm install                      # App
+cd backend && npm install        # Backend
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+## Chạy Backend
 
 ```sh
-bundle install
+cd backend
+cp .env.example .env             # Windows: copy .env.example .env
+# mở .env, điền JWT_ACCESS_SECRET (>= 32 ký tự) và MONGODB_URI
+npm run start:dev
 ```
 
-Then, and every time you update your native dependencies, run:
+Sinh secret: `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`.
+Kiểm tra: `http://localhost:3000/api/v1/health` phải trả `status: ok`. Swagger: `http://localhost:3000/api/docs`.
+
+`backend/.env` **không được commit** (đã gitignore): mỗi người tự tạo từ `.env.example`.
+Không cấu hình SMTP thì mã OTP được in ra log của backend (chỉ ở dev). Gửi mail thật: [docs/EMAIL_SETUP.md](docs/EMAIL_SETUP.md).
+Đăng nhập Google: [docs/GOOGLE_SIGNIN_SETUP.md](docs/GOOGLE_SIGNIN_SETUP.md).
+
+## Chạy App (Android emulator)
+
+Terminal 1: `npm start` (Metro). Terminal 2: `npm run android`.
+Emulator gọi backend ở `http://10.0.2.2:3000/api/v1` (xem `src/shared/config.ts`). Chi tiết và mẹo:
+[docs/MOBILE_BASE_VERIFICATION.md](docs/MOBILE_BASE_VERIFICATION.md).
+
+Đăng nhập Google cần emulator có **Google Play** (image `google_apis_playstore`) và email thử nằm trong **Test users**
+của project Google Cloud.
+
+iOS chưa được kiểm tra (nhóm dùng Windows).
+
+## Kiểm tra trước khi tạo PR
 
 ```sh
-bundle exec pod install
+npm run lint && npm run typecheck && npm test            # App
+cd backend && npm run typecheck && npm test              # Backend (cần MongoDB)
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## Tài liệu
 
-```sh
-# Using npm
-npm run ios
+- [docs/TEAM_WORKFLOW.md](docs/TEAM_WORKFLOW.md): cách làm việc nhóm với Git (đọc đầu tiên)
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): kiến trúc App, điều hướng, modal, API client
+- [backend/README.md](backend/README.md): decorator và dịch vụ dùng chung cho TV2/TV3
+- [docs/TV1_API_CHECKLIST.md](docs/TV1_API_CHECKLIST.md): danh sách API của TV1 và trạng thái
+- [docs/TV1_IMPLEMENTATION_PLAN.md](docs/TV1_IMPLEMENTATION_PLAN.md): kế hoạch và nhật ký tiến độ của TV1
 
-# OR using Yarn
-yarn ios
-```
+## Phân công
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+| Người | Phụ trách |
+| --- | --- |
+| TV1 | Core/Identity: đăng nhập, người dùng, quản trị viên, nhật ký, base Backend/Web/App |
+| TV2 | Địa điểm (Places) và phân loại (Taxonomy) |
+| TV3 | Nội dung, tải file, báo cáo, thông báo |
