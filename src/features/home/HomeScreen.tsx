@@ -12,6 +12,7 @@ import {
 } from 'lucide-react-native';
 import type { AppTabParamList } from '../../navigation/types';
 import { useModal } from '../../navigation/ModalCoordinator';
+import { useAuthGate } from '../../shared/auth/AuthGate';
 import { colors } from '../../shared/theme/tokens';
 import { AppText, Card, Screen } from '../../shared/ui';
 import { Brand } from '../../shared/ui/Brand';
@@ -41,6 +42,7 @@ const shortcuts = [
 export function HomeScreen() {
   const navigation = useNavigation<BottomTabNavigationProp<AppTabParamList>>();
   const { open } = useModal();
+  const { requireAuth } = useAuthGate();
   return (
     <Screen>
       <View style={styles.top}>
@@ -50,9 +52,9 @@ export function HomeScreen() {
           accessibilityLabel="Thông báo"
           style={styles.iconButton}
           onPress={() =>
-            open({
-              name: 'auth-required',
+            requireAuth({
               reason: 'Đăng nhập để xem thông báo dành cho bạn.',
+              action: () => open({ name: 'feature', feature: 'notifications' }),
             })
           }
         >

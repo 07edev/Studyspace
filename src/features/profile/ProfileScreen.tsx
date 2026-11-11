@@ -11,6 +11,7 @@ import {
 } from 'lucide-react-native';
 import { useModal } from '../../navigation/ModalCoordinator';
 import type { FeatureId } from '../../navigation/types';
+import { useAuthGate } from '../../shared/auth/AuthGate';
 import { useSession, useSessionManager } from '../../shared/auth/AuthProvider';
 import { AppText, Avatar, Button, Card, MenuGroup, MenuRow, Screen } from '../../shared/ui';
 import { features } from '../pending/features';
@@ -27,6 +28,7 @@ export function ProfileScreen() {
   const { open } = useModal();
   const session = useSession();
   const manager = useSessionManager();
+  const { requireAuth } = useAuthGate();
   const user = session.status === 'authenticated' ? session.user : undefined;
   const signedIn = !!user;
   // Show what the server has, not just what the login response carried. Failing quietly is
@@ -86,15 +88,12 @@ export function ProfileScreen() {
             label={features[feature].title}
             Icon={Icon}
             onPress={() =>
-              user
-                ? // The owning team (TV2/TV3) replaces this pending screen with the real one.
-                  open({ name: 'feature', feature })
-                : open({
-                    name: 'auth-required',
-                    reason: `Đăng nhập để xem ${features[
-                      feature
-                    ].title.toLocaleLowerCase('vi')}.`,
-                  })
+              // Signed in: opens now. Guest: asks to sign in, then opens this same screen.
+              // The owning team (TV2/TV3) replaces the pending screen with the real one.
+              requireAuth({
+                reason: `Đăng nhập để xem ${features[feature].title.toLocaleLowerCase('vi')}.`,
+                action: () => open({ name: 'feature', feature }),
+              })
             }
           />
         ))}

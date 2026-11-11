@@ -6,6 +6,7 @@ import { WelcomeScreen } from '../features/welcome/WelcomeScreen';
 import { AppTabs } from '../navigation/AppTabs';
 import { ModalCoordinator, useModal } from '../navigation/ModalCoordinator';
 import { ModalHost } from '../navigation/ModalHost';
+import { AuthGateProvider } from '../shared/auth/AuthGate';
 import { AuthProvider, useSession } from '../shared/auth/AuthProvider';
 import type { SessionManager } from '../shared/auth/sessionManager';
 import { QueryProvider } from '../shared/query';
@@ -35,7 +36,9 @@ export default function StudySpaceApp({ session }: { session?: SessionManager })
           <QueryProvider>
             <ConfirmProvider>
               <ModalCoordinator>
-                <Shell />
+                <AuthGateProvider>
+                  <Shell />
+                </AuthGateProvider>
               </ModalCoordinator>
             </ConfirmProvider>
           </QueryProvider>
