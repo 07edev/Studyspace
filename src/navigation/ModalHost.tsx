@@ -106,12 +106,17 @@ function ModalContent({
         <View style={styles.content}>
           <EmptyState
             icon={<LockKeyhole size={28} color={colors.primary} />}
-            title="Lưu lại hành trình học tập"
+            title="Bạn cần đăng nhập"
             description={route.reason}
           />
           <Button
             title="Đăng nhập"
             onPress={() => open({ name: 'auth', mode: 'login' })}
+          />
+          <Button
+            title="Tạo tài khoản"
+            variant="secondary"
+            onPress={() => open({ name: 'auth', mode: 'register' })}
           />
           <Button title="Để sau" variant="ghost" onPress={close} />
         </View>

@@ -85,6 +85,29 @@ sau khi server báo READY** (`onChange(fileId | null)`), và kiểm tra loại t
 (không gọi API), `upload(file, onProgress, signal)` thực hiện khởi tạo → gửi tệp → hoàn tất → chờ READY rồi trả `{ fileId }`.
 Thư viện chọn ảnh native chưa được cài; TV3 chọn và cài khi nối upload thật.
 
+## Hành động cần đăng nhập (U19)
+
+Mọi nút "cần tài khoản" (lưu địa điểm, bình luận, đăng bài, đánh giá…) gọi `requireAuth`, **không tự mở màn đăng nhập**:
+
+```tsx
+const { requireAuth } = useAuthGate();   // shared/auth/AuthGate
+const { open } = useModal();
+
+<Button title="Lưu" onPress={() =>
+  requireAuth({
+    reason: 'Đăng nhập để lưu địa điểm này.',          // hiện trong U19
+    action: () => saveFavorite(place.id),               // chạy ngay nếu đã đăng nhập; nếu chưa, chạy sau khi đăng nhập xong
+    isStillValid: () => place.id === currentPlaceId,    // (tùy chọn) kiểm tra trước khi chạy lại
+  })
+} />
+```
+
+- Đã đăng nhập: `action` chạy ngay. Chưa: mở U19 (Đăng nhập / Tạo tài khoản / Để sau), nhớ yêu cầu và **chạy đúng một lần** khi đăng nhập xong (sau cả bước hoàn thiện hồ sơ nếu vừa đăng ký).
+- Bỏ yêu cầu khi người dùng đóng U19 hoặc màn đăng nhập, khi quá 10 phút (`maxAgeMs`), hoặc khi `isStillValid` trả `false` (có thông báo). Yêu cầu mới thay yêu cầu cũ.
+- **Giữ nháp**: biểu mẫu đang mở sẽ đóng khi sang đăng nhập, nên đưa nội dung đã gõ vào closure của `action` (ví dụ `action: () => submitComment(text)`) hoặc mở lại biểu mẫu với nội dung đó.
+- `action` lỗi: người dùng thấy `ApiError.message` (hoặc câu chung), không bị treo. Trang cho phép khách xem thì không cần gọi `requireAuth`; chỉ gọi ở thao tác ghi.
+- Mẫu thật: `features/profile/ProfileScreen.tsx` (các dòng "Góc học của tôi") và chuông thông báo ở `HomeScreen`.
+
 ## Thêm màn hình hoặc modal mới
 
 - Tab: đăng ký màn hình ở `navigation/AppTabs.tsx`.
