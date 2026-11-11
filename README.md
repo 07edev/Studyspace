@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | `/` (gốc), `src/`, `android/`, `ios/` | App di động | React Native CLI 0.88, TypeScript |
 | `backend/` | API `/api/v1` | NestJS 11, MongoDB (Mongoose 9) |
-| `web-admin/` | Web quản trị: khung, đăng nhập, phân quyền menu ([hướng dẫn](web-admin/README.md)) | React 19 + Vite 8 |
+| `web-admin/` | Web quản trị: khung, đăng nhập, phân quyền, quản lý người dùng và Admin ([hướng dẫn](web-admin/README.md)) | React 19 + Vite 8 |
 
 Phạm vi G1: màn Welcome + 5 tab, không Drawer. Không có booking, thanh toán, gói đăng ký, chat realtime.
 

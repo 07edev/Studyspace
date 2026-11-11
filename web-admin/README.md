@@ -1,7 +1,7 @@
 # StudySpace Web Admin
 
-React 19 + Vite + TypeScript. Trang quản trị cho Admin / Super Admin. Có khung ứng dụng, đăng nhập (ADM-01 + A01–A03),
-phân quyền menu và bộ component dùng chung. **Các trang nghiệp vụ chưa có** (hiện là trang "Chưa xây dựng").
+React 19 + Vite + TypeScript. Trang quản trị cho Admin / Super Admin. Có khung ứng dụng, đăng nhập (ADM-01 + A01–A03), phân quyền menu, bộ component dùng chung và các trang của TV1:
+**Người dùng** (ADM-03, ADM-04, A04–A07), **Quản lý Admin** (ADM-05, A08–A11), **Tổng quan** (ADM-02), **Thống kê hoạt động** (ADM-24) và **Nhật ký quản trị** (ADM-25, A50, A51). Các trang của TV2/TV3 chưa có (hiện là trang "Chưa xây dựng").
 
 ## Chạy
 
@@ -28,7 +28,7 @@ và thêm origin của web vào `CORS_ORIGINS` của backend.
 | `npm run dev` | Chạy phát triển |
 | `npm run build` | Typecheck + build ra `dist/` |
 | `npm run typecheck` | Chỉ kiểm tra kiểu |
-| `npm test` | Vitest + Testing Library |
+| `npm test` | Vitest + Testing Library. **Chạy từ terminal có ổ đĩa viết HOA (`C:\...`)**: trên Windows, đường dẫn viết thường (`c:\...`) khiến Vitest nạp hai bản module và báo "failed to find the current suite" |
 
 ## Cấu trúc
 
@@ -37,6 +37,7 @@ src/
   app/        App (routes), AdminShell (menu + thanh trên), Providers, registry.tsx  <- danh sách trang
   auth/       AuthProvider (phiên), permissions.ts (can), guards.tsx (RequireAdmin, PermissionGate)
   lib/        api.ts (client), query.ts (TanStack Query + queryKeys + usePagedQuery)
+  features/   users/ (ADM-03/04, A04–A07), admins/ (ADM-05, A08–A11), stats/ (ADM-02, ADM-24), audit/ (ADM-25, A50, A51)
   pages/      LoginPage (ADM-01), ForgotPasswordFlow (A01–A03), PendingPage
   ui/         component dùng chung
   styles/     app.css (token màu cùng bảng màu với App)
@@ -44,6 +45,19 @@ src/
 
 Kiểu dữ liệu API (`User`, `Page<T>`, `ApiFailure`…) lấy từ `../src/shared/contracts` qua alias `@contracts/*` (chỉ kiểu, không có mã chạy),
 nên App và Web dùng chung một định nghĩa.
+
+## Dùng lại phần của TV1
+
+- `UserStatusDialog` (`features/users`): hộp khóa/mở khóa có lý do ≥ 10 ký tự. TV3 dùng cho A48 (xử lý tài khoản liên quan).
+- `ContentTab` trong `UserDetailPage`: tab Bài viết/Tài liệu/Đánh giá/Đề xuất đang hiện danh sách chung (`title`/`name`/`id`); chủ sở hữu dữ liệu thay bằng cột của mình khi nối backend.
+- `PermissionMatrix` (`features/admins`): bảng quyền theo mục × thao tác. Module mới dùng thao tác nào thì thêm vào `PERMISSION_CATALOG`.
+- `ModalCancel`: nút Hủy trong form của `Modal`; **luôn dùng nút này**, không tự gọi `onClose`, để hộp "Rời khỏi form?" hoạt động.
+
+## Biểu đồ và số liệu
+
+- `ui/charts/LineChart`: một chuỗi theo thời gian (đường 2px, lưới mảnh, chấm cuối kèm giá trị, đường dọc + chú thích khi rê chuột hoặc dùng phím mũi tên/Home/End). Mỗi chỉ số một biểu đồ riêng vì thang đo khác nhau; luôn có chế độ bảng cùng số liệu (xem `ActivityPage`). Màu dùng bảng màu chuẩn của skill dataviz (xanh dương, đã kiểm `validate_palette`).
+- Số liệu của bạn lên dashboard/thống kê: đăng ký nguồn ở **backend** (`StatsRegistry`, xem `backend/README.md`); Web tự hiện khi có. Muốn thêm một chuỗi mới vào ADM-24, thêm vào `SERIES` trong `features/stats/ActivityPage.tsx` và vào backend.
+- Nhãn tiếng Việt cho hành động/đối tượng trong nhật ký: thêm vào `features/audit/audit.ts` (chưa có thì hiện mã gốc).
 
 ## Thêm một trang (TV2 / TV3)
 

@@ -28,6 +28,18 @@ export const queryKeys = {
     all: ['admins'] as const,
     list: (filters: object) => ['admins', 'list', filters] as const,
   },
+  audit: {
+    all: ['audit'] as const,
+    list: (filters: object) => ['audit', 'list', filters] as const,
+    detail: (id: string) => ['audit', 'detail', id] as const,
+  },
+  // Dashboard and statistics. After a moderation action (approve, hide, resolve...) call
+  // queryClient.invalidateQueries({ queryKey: queryKeys.stats.all }) so the numbers refresh.
+  stats: {
+    all: ['stats'] as const,
+    dashboard: (days: number) => ['stats', 'dashboard', days] as const,
+    activity: (params: object) => ['stats', 'activity', params] as const,
+  },
 };
 
 type Params = Record<string, string | number | boolean | undefined>;
@@ -36,12 +48,15 @@ type Params = Record<string, string | number | boolean | undefined>;
 export function useApiQuery<T>(
   key: readonly unknown[],
   path: string,
-  options: { query?: Params; enabled?: boolean } = {},
+  // keepPrevious: while the key changes (a new filter), keep showing the last result instead of
+  // blanking the screen; `isPlaceholderData` tells the page it is out of date.
+  options: { query?: Params; enabled?: boolean; keepPrevious?: boolean } = {},
 ) {
   return useQuery<T, ApiError>({
     queryKey: key,
     queryFn: ({ signal }) => api.request<T>(path, { query: options.query, signal }),
     enabled: options.enabled,
+    placeholderData: options.keepPrevious ? keepPreviousData : undefined,
   });
 }
 

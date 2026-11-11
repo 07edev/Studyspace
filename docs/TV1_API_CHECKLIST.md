@@ -1,6 +1,6 @@
 # Danh sách API TV1
 
-Đối chiếu 44 operations từ mục 7.1 của báo cáo phân công ngày 08/11/2026. Trạng thái: `BE DONE` = backend đã triển khai và có test e2e (UI App/Admin chưa tính); `TODO` = chưa làm. Cập nhật 10/11/2026: 15 endpoint `/auth/*` và 9 endpoint `/users/*` đã BE DONE (24/44; `POST /users/me/devices` trả thêm `deviceId` ngoài `message` để App xóa thiết bị). Các tên DTO, scope và lỗi bên dưới được giữ theo báo cáo, chưa thay thế OpenAPI/schema cần chốt trước khi code.
+Đối chiếu 44 operations từ mục 7.1 của báo cáo phân công ngày 08/11/2026. Trạng thái: `BE DONE` = backend đã triển khai và có test e2e (UI App/Admin chưa tính); `WAITING` = phía TV1 đã xong, chờ TV2/TV3 nối dữ liệu; `TODO` = chưa làm. Cập nhật 10/11/2026: 15 endpoint `/auth/*`, 9 endpoint `/users/*`, 5 endpoint `/admin/users/*` (danh sách, chi tiết, trạng thái, activity, violations), 6 endpoint `/admin/admins/*`, `GET /admin/dashboard`, 2 endpoint `/admin/statistics/*` và 2 endpoint `/admin/audit-logs*` đã BE DONE (40/44); 4 endpoint nội dung của người dùng (`posts`, `documents`, `reviews`, `suggestions`) đã có phía TV1 nhưng `WAITING` TV2/TV3 nối dữ liệu (trả 503 `CONTENT_NOT_CONNECTED` đến khi đó); không còn endpoint TODO. Bổ sung ngoài báo cáo: số liệu của TV2/TV3 trong dashboard/thống kê vắng mặt (không phải 0) đến khi họ đăng ký nguồn số liệu (`StatsRegistry`); phản hồi thống kê có thêm `range`, `series`, `failedSources`; nhật ký có thêm `actor` (tên + email); `POST /users/me/devices` trả thêm `deviceId` (để App xóa thiết bị), `POST /admin/admins` trả thêm `invitationSent`. Các tên DTO, scope và lỗi bên dưới được giữ theo báo cáo, chưa thay thế OpenAPI/schema cần chốt trước khi code.
 
 Base path dự kiến: `/api/v1`. Mã 204 không có response body. Auth/scope phải được kiểm tra ở server.
 
@@ -30,26 +30,26 @@ Base path dự kiến: `/api/v1`. Mã 204 không có response body. Auth/scope p
 | BE DONE | `GET /users/{userId}/public-profile` | `PUBLIC` | `none → PublicAuthor` | `200` | `NOT_FOUND` | `—` |
 | BE DONE | `POST /users/me/devices` | `USER` | `NotificationDevice → StatusMessage` | `201` | `VALIDATION_ERROR` | `—` |
 | BE DONE | `DELETE /users/me/devices/{deviceId}` | `USER` | `none → none` | `204` | `NOT_FOUND` | `U52` |
-| TODO | `GET /admin/users` | `ADMIN:USERS.READ` | `none → Page<User>` | `200` | `FORBIDDEN, QUERY_INVALID` | `ADM-03,ADM-04,A06,A07` |
-| TODO | `GET /admin/users/{userId}` | `ADMIN:USERS.READ` | `none → UserAdminDetail` | `200` | `NOT_FOUND, FORBIDDEN` | `ADM-04,A06,A07` |
-| TODO | `PATCH /admin/users/{userId}/status` | `ADMIN:USERS.UPDATE` | `AdminUserStatus → User` | `200` | `FORBIDDEN, INVALID_STATE_TRANSITION, VALIDATION_ERROR` | `ADM-03,A04,A05,A48` |
-| TODO | `GET /admin/users/{userId}/activity` | `ADMIN:USERS.READ` | `none → Page<AuditEvent>` | `200` | `FORBIDDEN, NOT_FOUND` | `A07` |
-| TODO | `GET /admin/users/{userId}/posts` | `ADMIN:USERS.READ` | `none → Page<Post>` | `200` | `FORBIDDEN, NOT_FOUND` | `ADM-04` |
-| TODO | `GET /admin/users/{userId}/documents` | `ADMIN:USERS.READ` | `none → Page<Document>` | `200` | `FORBIDDEN, NOT_FOUND` | `ADM-04` |
-| TODO | `GET /admin/users/{userId}/reviews` | `ADMIN:USERS.READ` | `none → Page<Review>` | `200` | `FORBIDDEN, NOT_FOUND` | `ADM-04` |
-| TODO | `GET /admin/users/{userId}/suggestions` | `ADMIN:USERS.READ` | `none → Page<Suggestion>` | `200` | `FORBIDDEN, NOT_FOUND` | `ADM-04` |
-| TODO | `GET /admin/users/{userId}/violations` | `ADMIN:USERS.READ` | `none → Page<AuditEvent>` | `200` | `FORBIDDEN, NOT_FOUND` | `ADM-04,A07` |
-| TODO | `GET /admin/admins` | `SUPER_ADMIN` | `none → Page<Admin>` | `200` | `FORBIDDEN` | `ADM-05,A09` |
-| TODO | `POST /admin/admins` | `SUPER_ADMIN` | `AdminCreate → Admin` | `201` | `EMAIL_ALREADY_EXISTS, FORBIDDEN, VALIDATION_ERROR` | `ADM-05,A08` |
-| TODO | `GET /admin/admins/{adminId}` | `SUPER_ADMIN` | `none → Admin` | `200` | `NOT_FOUND` | `A09` |
-| TODO | `PATCH /admin/admins/{adminId}` | `SUPER_ADMIN` | `AdminPatch → Admin` | `200` | `FORBIDDEN, INVALID_STATE_TRANSITION` | `ADM-05,A09` |
-| TODO | `PUT /admin/admins/{adminId}/permissions` | `SUPER_ADMIN` | `AdminPatch → Admin` | `200` | `FORBIDDEN, INVALID_PERMISSION` | `ADM-05,A10` |
-| TODO | `DELETE /admin/admins/{adminId}` | `SUPER_ADMIN` | `none → none` | `204` | `FORBIDDEN, INVALID_STATE_TRANSITION` | `ADM-05,A11` |
-| TODO | `GET /admin/dashboard` | `ADMIN:STATISTICS.READ` | `none → DashboardStats` | `200` | `FORBIDDEN` | `ADM-02` |
-| TODO | `GET /admin/statistics/activity` | `ADMIN:STATISTICS.READ` | `none → Page<TimelinePoint>` | `200` | `FORBIDDEN, QUERY_INVALID` | `ADM-24` |
-| TODO | `GET /admin/statistics/overview` | `ADMIN:STATISTICS.READ` | `none → DashboardStats` | `200` | `FORBIDDEN, QUERY_INVALID` | `ADM-24` |
-| TODO | `GET /admin/audit-logs` | `ADMIN:AUDIT.READ` | `none → Page<AuditEvent>` | `200` | `FORBIDDEN, QUERY_INVALID` | `ADM-25,A50,A51` |
-| TODO | `GET /admin/audit-logs/{auditId}` | `ADMIN:AUDIT.READ` | `none → AuditEvent` | `200` | `FORBIDDEN, NOT_FOUND` | `ADM-25,A50,A51` |
+| BE DONE | `GET /admin/users` | `ADMIN:USERS.READ` | `none → Page<User>` | `200` | `FORBIDDEN, QUERY_INVALID` | `ADM-03,ADM-04,A06,A07` |
+| BE DONE | `GET /admin/users/{userId}` | `ADMIN:USERS.READ` | `none → UserAdminDetail` | `200` | `NOT_FOUND, FORBIDDEN` | `ADM-04,A06,A07` |
+| BE DONE | `PATCH /admin/users/{userId}/status` | `ADMIN:USERS.UPDATE` | `AdminUserStatus → User` | `200` | `FORBIDDEN, INVALID_STATE_TRANSITION, VALIDATION_ERROR` | `ADM-03,A04,A05,A48` |
+| BE DONE | `GET /admin/users/{userId}/activity` | `ADMIN:USERS.READ` | `none → Page<AuditEvent>` | `200` | `FORBIDDEN, NOT_FOUND` | `A07` |
+| WAITING | `GET /admin/users/{userId}/posts` | `ADMIN:USERS.READ` | `none → Page<Post>` | `200` | `FORBIDDEN, NOT_FOUND` | `ADM-04` |
+| WAITING | `GET /admin/users/{userId}/documents` | `ADMIN:USERS.READ` | `none → Page<Document>` | `200` | `FORBIDDEN, NOT_FOUND` | `ADM-04` |
+| WAITING | `GET /admin/users/{userId}/reviews` | `ADMIN:USERS.READ` | `none → Page<Review>` | `200` | `FORBIDDEN, NOT_FOUND` | `ADM-04` |
+| WAITING | `GET /admin/users/{userId}/suggestions` | `ADMIN:USERS.READ` | `none → Page<Suggestion>` | `200` | `FORBIDDEN, NOT_FOUND` | `ADM-04` |
+| BE DONE | `GET /admin/users/{userId}/violations` | `ADMIN:USERS.READ` | `none → Page<AuditEvent>` | `200` | `FORBIDDEN, NOT_FOUND` | `ADM-04,A07` |
+| BE DONE | `GET /admin/admins` | `SUPER_ADMIN` | `none → Page<Admin>` | `200` | `FORBIDDEN` | `ADM-05,A09` |
+| BE DONE | `POST /admin/admins` | `SUPER_ADMIN` | `AdminCreate → Admin` | `201` | `EMAIL_ALREADY_EXISTS, FORBIDDEN, VALIDATION_ERROR` | `ADM-05,A08` |
+| BE DONE | `GET /admin/admins/{adminId}` | `SUPER_ADMIN` | `none → Admin` | `200` | `NOT_FOUND` | `A09` |
+| BE DONE | `PATCH /admin/admins/{adminId}` | `SUPER_ADMIN` | `AdminPatch → Admin` | `200` | `FORBIDDEN, INVALID_STATE_TRANSITION` | `ADM-05,A09` |
+| BE DONE | `PUT /admin/admins/{adminId}/permissions` | `SUPER_ADMIN` | `AdminPatch → Admin` | `200` | `FORBIDDEN, INVALID_PERMISSION` | `ADM-05,A10` |
+| BE DONE | `DELETE /admin/admins/{adminId}` | `SUPER_ADMIN` | `none → none` | `204` | `FORBIDDEN, INVALID_STATE_TRANSITION` | `ADM-05,A11` |
+| BE DONE | `GET /admin/dashboard` | `ADMIN:STATISTICS.READ` | `none → DashboardStats` | `200` | `FORBIDDEN` | `ADM-02` |
+| BE DONE | `GET /admin/statistics/activity` | `ADMIN:STATISTICS.READ` | `none → Page<TimelinePoint>` | `200` | `FORBIDDEN, QUERY_INVALID` | `ADM-24` |
+| BE DONE | `GET /admin/statistics/overview` | `ADMIN:STATISTICS.READ` | `none → DashboardStats` | `200` | `FORBIDDEN, QUERY_INVALID` | `ADM-24` |
+| BE DONE | `GET /admin/audit-logs` | `ADMIN:AUDIT.READ` | `none → Page<AuditEvent>` | `200` | `FORBIDDEN, QUERY_INVALID` | `ADM-25,A50,A51` |
+| BE DONE | `GET /admin/audit-logs/{auditId}` | `ADMIN:AUDIT.READ` | `none → AuditEvent` | `200` | `FORBIDDEN, NOT_FOUND` | `ADM-25,A50,A51` |
 
 ## Các điểm phải chốt khi triển khai
 

@@ -42,6 +42,8 @@ hoặc đổi quyền có hiệu lực ngay.
 
 ## Lưu ý
 
+- `npm test` đôi khi báo "Worker exited unexpectedly with exit code 3221226505" (khoảng 1/8 lần chạy trên Windows/Node 24, cả với file test cũ, kể cả khi đổi sang `--pool=threads`). Đây là sập tiến trình native, không phải test sai: chạy lại là qua.
+
 - `idempotency_keys` có thêm `requestHash`, `state`, `response` so với ERD để phát lại kết quả an toàn.
 - Collection TV1: users, admin_profiles, sessions, otp_challenges, user_devices, audit_logs,
   idempotency_keys, outbox_events (xem `docs/ARCHITECTURE.md`).
@@ -66,6 +68,43 @@ hoặc đổi quyền có hiệu lực ngay.
 - Backend tự đọc `backend/.env` khi chạy (`npm run start:dev` hoặc `npm start`).
 - Thông báo lỗi trả về bằng tiếng Việt; client dựa vào `error.code` và `details[].field`, không dựa vào chữ.
 - Rate limit theo IP trên từng endpoint auth; đặt `RATE_LIMIT_DISABLED=true` để tắt khi dev (bị bỏ qua ở production).
+
+## Quản trị người dùng và Admin (I03/I04)
+
+- `/admin/users/*` (quyền `USERS.READ`; đổi trạng thái cần `USERS.UPDATE`): danh sách có lọc (`q`, `role`, `status`, `createdFrom`, `createdTo`, `sort`, `page`, `limit` ≤ 100), chi tiết, `PATCH …/status`
+  (`{action: SUSPEND|UNSUSPEND, reason ≥ 10 ký tự}`), `activity` (việc người đó làm), `violations` (các lần xử lý). Dữ liệu trả về đã che bớt (không ngày sinh, giới thiệu, vị trí; số điện thoại che giữa).
+  Không thể khóa chính mình hoặc Super Admin; tài khoản Admin chỉ Super Admin khóa được. Khóa thu hồi mọi phiên, ghi audit `USER_SUSPENDED/USER_UNSUSPENDED` (có lý do) và sự kiện outbox `USER_STATUS_CHANGED` (không có lý do) cho TV3 gửi thông báo.
+- Nội dung của người dùng (`posts`, `documents`, `reviews`, `suggestions`) và số đếm trong `UserAdminDetail`: **TV2/TV3 nối** bằng cách kế thừa `NotConnectedUserContentRef` (`modules/admin-users/ports.ts`) và đổi `useClass` trong `admin-users.module.ts`.
+  Chưa nối thì số đếm bị bỏ khỏi phản hồi (không phải 0) và endpoint trả 503 `CONTENT_NOT_CONNECTED`. TV3 ghi audit cho quyết định báo cáo về người dùng thì thêm tên hành động vào `USER_MODERATION_ACTIONS` để hiện ở "lịch sử xử lý".
+- `/admin/admins/*` (chỉ Super Admin): `POST` tạo quản trị viên **không có mật khẩu** và gửi email mời (không chứa mật khẩu/mã); người được mời vào trang quản trị → "Quên mật khẩu" để đặt mật khẩu đầu tiên. Phản hồi có `invitationSent` (false nếu gửi mail lỗi; tài khoản vẫn được tạo).
+  `PUT …/permissions` thay toàn bộ danh sách; `INVALID_PERMISSION` cho module/thao tác không tồn tại, trùng, rỗng hoặc module `ADMINS` (chỉ Super Admin). `PATCH` đổi tên/trạng thái; `DELETE` gỡ quyền quản trị (tài khoản còn lại là người dùng thường).
+  Quyền có hiệu lực ngay vì server đọc quyền ở mỗi request; vô hiệu hóa/gỡ quyền thu hồi phiên. Không ai tự vô hiệu hóa hoặc gỡ chính mình, nên Super Admin cuối cùng luôn còn; mọi thay đổi lên Admin chạy tuần tự trong tiến trình (`common/utils/mutex.ts`) — chạy nhiều instance cần khóa ở database.
+- Phân trang dùng chung: `common/utils/page.ts` (`PageQuery`, `toPage`, `escapeRegex`).
+
+## Nhật ký và thống kê (I06/I05)
+
+- `GET /admin/audit-logs`, `GET /admin/audit-logs/{id}` (quyền `AUDIT.READ`): chỉ đọc. Lọc `actorId`, `actorType`, `action` (chứa chuỗi, không phân biệt hoa thường, không phải mẫu), `resourceType`, `resourceId`, `requestId`, `from`, `to`; mới nhất trước.
+  Mỗi dòng kèm `actor {displayName, email}` khi người thực hiện là một tài khoản. Giá trị lưu dưới khóa nhạy cảm (password, token, otp…) đã bị che từ lúc `AuditService.record`. **TV2/TV3 ghi audit chỉ qua `AuditService.record`**, không ghi thẳng `audit_logs`.
+- `GET /admin/dashboard`, `/admin/statistics/overview`, `/admin/statistics/activity` (quyền `STATISTICS.READ`): ngày theo giờ Việt Nam (UTC+7), `from/to` là ngày gồm cả hai đầu, tối đa 366 ngày. "Người dùng" = tài khoản role USER chưa bị xóa.
+  Chuỗi theo ngày được điền 0; `granularity` WEEK lấy thứ Hai làm ngày đầu tuần, MONTH lấy ngày 1.
+- **Số liệu của TV2/TV3** đăng ký qua `StatsRegistry` (global), thường trong `onModuleInit` của module của bạn:
+
+```ts
+constructor(private readonly stats: StatsRegistry) {}
+onModuleInit() {
+  this.stats.register({
+    name: 'places',
+    // Tổng và hàng chờ hiện tại. Trường hợp lệ: totalPlaces, pendingSuggestions, totalPosts, totalDocuments,
+    // pendingDocuments, openReports (số nguyên >= 0) và placesByCategory ({ tên: số }).
+    overview: async window => ({ totalPlaces: await this.places.count(), pendingSuggestions: await this.sugg.countPending() }),
+    // Số mục MỚI mỗi ngày trong window (date = YYYY-MM-DD giờ Việt Nam; ngày vắng mặt tính là 0).
+    daily: async window => ({ places: await this.places.createdPerDay(window) }),   // chuỗi: places | posts | documents | reports
+  });
+}
+```
+
+  Chưa đăng ký thì trường/chuỗi đó **vắng mặt** trong phản hồi (Web hiện "—", không phải 0). Giá trị sai (âm, không nguyên, trường lạ) bị bỏ; nguồn ném lỗi bị bỏ qua và nêu trong `failedSources`.
+  `window = { from, to }` là khoảng nửa mở `[from, to)` theo `Date`. Sau thao tác kiểm duyệt phía Web, gọi `queryClient.invalidateQueries({ queryKey: queryKeys.stats.all })` để dashboard làm mới.
 
 ## Users (I02)
 

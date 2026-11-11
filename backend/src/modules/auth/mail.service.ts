@@ -5,10 +5,18 @@ import { APP_CONFIG, type AppConfig } from '../../config/configuration';
 
 export type OtpDestination = { email?: string; phone?: string };
 
+const escapeHtml = (text: string) =>
+  text.replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch] as string);
+
 // Delivery abstraction used by auth. Email goes out through SMTP when configured; there is
 // no SMS provider yet (see canSendSms), so phone-based codes are refused instead of faked.
 export abstract class MailService {
   abstract sendOtp(to: OtpDestination, purpose: string, code: string): Promise<void>;
+  /**
+   * Tells a newly created admin how to set their first password. It carries no code and no
+   * password: the person uses "Quên mật khẩu" on the admin site, which sends a fresh code.
+   */
+  abstract sendAdminInvite(to: { email: string }, invitedBy: string, adminSiteUrl?: string): Promise<void>;
   /** False when no SMS gateway exists: callers must refuse phone flows up front. */
   abstract canSendSms(): boolean;
   /** Test/dev helper: last code sent to an address. Always undefined for real deliveries. */
@@ -40,6 +48,15 @@ export class DevMailService extends MailService {
     this.sent.set(`${address}|${purpose}`, code);
     if (this.config.nodeEnv !== 'test') {
       this.logger.log(`[DEV ONLY] OTP ${purpose} for ${address}: ${code}`);
+    }
+  }
+
+  readonly invites: string[] = [];
+
+  async sendAdminInvite(to: { email: string }): Promise<void> {
+    this.invites.push(to.email);
+    if (this.config.nodeEnv !== 'test') {
+      this.logger.log(`[DEV ONLY] Admin invitation for ${to.email} (no code inside)`);
     }
   }
 
@@ -115,6 +132,32 @@ export class SmtpMailService extends MailService {
         'MAIL_DELIVERY_FAILED',
         'Không thể gửi email lúc này. Vui lòng thử lại sau.',
       );
+    }
+  }
+
+  async sendAdminInvite(to: { email: string }, invitedBy: string, adminSiteUrl?: string): Promise<void> {
+    const where = adminSiteUrl ? ` tại ${adminSiteUrl}` : '';
+    const steps =
+      `Mở trang quản trị${where}, chọn "Quên mật khẩu", nhập đúng email này và làm theo hướng dẫn ` +
+      `để tạo mật khẩu đầu tiên.`;
+    try {
+      await this.transport.sendMail({
+        from: this.config.smtp?.from,
+        to: to.email,
+        subject: 'Lời mời làm quản trị viên StudySpace',
+        text:
+          `${invitedBy} đã mời bạn làm quản trị viên StudySpace.\n\n${steps}\n\n` +
+          `Email này không chứa mật khẩu. Nếu bạn không mong đợi lời mời, hãy bỏ qua email này.`,
+        html:
+          `<div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;color:#182E28">` +
+          `<h2 style="color:#285C49">StudySpace</h2>` +
+          `<p><strong>${escapeHtml(invitedBy)}</strong> đã mời bạn làm quản trị viên StudySpace.</p>` +
+          `<p>${escapeHtml(steps)}</p>` +
+          `<p style="color:#66766E;font-size:13px">Email này không chứa mật khẩu. Nếu bạn không mong đợi lời mời, hãy bỏ qua email này.</p></div>`,
+      });
+    } catch (error) {
+      this.logger.error(`Failed to send admin invitation: ${(error as Error).message}`);
+      throw new ApiException(503, 'MAIL_DELIVERY_FAILED', 'Không thể gửi email lúc này. Vui lòng thử lại sau.');
     }
   }
 
