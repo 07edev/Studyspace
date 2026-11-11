@@ -346,6 +346,8 @@ export class AuthService {
     if (!user.authProviders.includes('PASSWORD')) {
       user.authProviders.push('PASSWORD');
     }
+    // Receiving the code proved they own the mailbox (also completes an admin invitation).
+    user.emailVerified = true;
     await user.save();
     await this.sessions.revokeAllForUser(String(user._id));
     await this.audit.record({

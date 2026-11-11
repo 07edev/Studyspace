@@ -3,6 +3,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './modules/auth/auth.module';
+import { AdminAdminsModule } from './modules/admin-admins/admin-admins.module';
+import { AdminUsersModule } from './modules/admin-users/admin-users.module';
+import { StatsModule } from './modules/stats/stats.module';
 import { UsersModule } from './modules/users/users.module';
 import { ConfigModule } from './config/config.module';
 import { APP_CONFIG, type AppConfig } from './config/configuration';
@@ -37,6 +40,9 @@ export class AppModule {
         IdempotencyModule,
         AuthModule,
         UsersModule,
+        AdminUsersModule,
+        AdminAdminsModule,
+        StatsModule,
         // TV2/TV3 register their feature modules here.
       ],
       controllers: [HealthController],
