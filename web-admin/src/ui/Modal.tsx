@@ -1,6 +1,15 @@
 import { X } from 'lucide-react';
-import { useCallback, useEffect, useId, useRef, type PropsWithChildren } from 'react';
+import { createContext, useCallback, useContext, useEffect, useId, useRef, type PropsWithChildren } from 'react';
+import { Button } from './controls';
 import { useConfirm } from './Confirm';
+
+const CloseContext = createContext<(() => void) | undefined>(undefined);
+
+/** Cancel button for forms inside a Modal: goes through the same "unsaved changes" check as Esc / X. */
+export function ModalCancel({ children = 'Hủy' }: PropsWithChildren) {
+  const requestClose = useContext(CloseContext);
+  return <Button variant="ghost" onClick={() => requestClose?.()}>{children}</Button>;
+}
 
 // Sizes follow the spec: C = confirmation / short form, L = sheet, F = full screen.
 export type ModalSize = 'C' | 'L' | 'F';
@@ -77,7 +86,9 @@ export function Modal({
             <X size={20} aria-hidden />
           </button>
         </div>
-        <div className="modal-body">{children}</div>
+        <CloseContext.Provider value={() => void requestClose()}>
+          <div className="modal-body">{children}</div>
+        </CloseContext.Provider>
       </div>
     </div>
   );

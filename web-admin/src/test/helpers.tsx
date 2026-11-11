@@ -51,6 +51,33 @@ export function mockApi(routes: Record<string, Handler>) {
   return { calls, count: (key: string) => calls.filter(c => c.key === key).length };
 }
 
+export const signedIn = (user: User = makeAdmin()) => ({
+  'POST /auth/token/refresh': () => ok(tokens),
+  'GET /auth/me': () => ok(user),
+});
+
+export const superAdmin = (overrides: Partial<User> = {}) =>
+  makeAdmin({ id: 'root1', email: 'root@example.test', role: 'SUPER_ADMIN', admin: { status: 'ACTIVE', permissions: [] }, ...overrides });
+
+export const page = <T,>(
+  items: T[],
+  extra: Partial<{ page: number; total: number; totalPages: number; hasNext: boolean }> = {},
+) => ({ items, pagination: { page: 1, limit: 20, total: items.length, totalPages: 1, hasNext: false, ...extra } });
+
+export const userRow = (overrides: Record<string, unknown> = {}) => ({
+  id: 'user1',
+  email: 'an@example.test',
+  role: 'USER',
+  status: 'ACTIVE',
+  emailVerified: true,
+  authProviders: ['PASSWORD'],
+  profile: { displayName: 'An Nguyen' },
+  createdAt: '2026-01-01T00:00:00.000Z',
+  ...overrides,
+});
+
+export const body = (init: RequestInit) => JSON.parse(String(init.body));
+
 export function resetApi() {
   api.setAccessToken(undefined);
   vi.unstubAllGlobals();

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { ResetGrant, StatusMessage } from '@contracts/auth';
 import { api } from '../lib/api';
-import { Button, Modal, TextField, useSubmit, useToast } from '../ui';
+import { Button, Modal, TextField, useSubmit, useToast, ModalCancel } from '../ui';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const RESEND_SECONDS = 60;
@@ -79,7 +79,7 @@ function EmailStep({
         />
         {submit.message && <div className="form-error" role="alert">{submit.message}</div>}
         <div className="modal-actions">
-          <Button variant="ghost" onClick={onClose}>Hủy</Button>
+          <ModalCancel />
           <Button type="submit" loading={submit.pending}>Gửi mã</Button>
         </div>
       </form>
@@ -203,7 +203,7 @@ function NewPasswordStep({
         />
         {submit.message && !expired && <div className="form-error" role="alert">{submit.message}</div>}
         <div className="modal-actions">
-          <Button variant="ghost" onClick={onClose}>Hủy</Button>
+          <ModalCancel />
           <Button type="submit" loading={submit.pending}>Đặt lại mật khẩu</Button>
         </div>
       </form>

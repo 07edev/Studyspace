@@ -4,6 +4,12 @@ import {
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { Access } from '../auth/permissions';
+import { AdminsPage } from '../features/admins/AdminsPage';
+import { AuditPage } from '../features/audit/AuditPage';
+import { ActivityPage } from '../features/stats/ActivityPage';
+import { DashboardPage } from '../features/stats/DashboardPage';
+import { UserDetailPage } from '../features/users/UserDetailPage';
+import { UsersPage } from '../features/users/UsersPage';
 import { PendingPage } from '../pages/PendingPage';
 
 /**
@@ -33,22 +39,23 @@ export const adminPages: AdminPage[] = [
   {
     id: 'ADM-02', path: 'dashboard', label: 'Tổng quan', group: 'Tổng quan', icon: LayoutDashboard,
     access: { module: 'STATISTICS', action: 'READ' }, owner: 'TV1',
-    element: pending('ADM-02', 'TV1', 'Tổng quan', 'API GET /admin/dashboard (I05)'),
+    element: <DashboardPage />,
   },
   {
     id: 'ADM-24', path: 'statistics', label: 'Thống kê hoạt động', group: 'Tổng quan', icon: BarChart3,
     access: { module: 'STATISTICS', action: 'READ' }, owner: 'TV1',
-    element: pending('ADM-24', 'TV1', 'Thống kê hoạt động', 'API /admin/statistics/* (I05)'),
+    element: <ActivityPage />,
   },
   {
     id: 'ADM-03', path: 'users', label: 'Người dùng', group: 'Tài khoản', icon: Users,
     access: { module: 'USERS', action: 'READ' }, owner: 'TV1',
-    element: pending('ADM-03', 'TV1', 'Người dùng', 'API GET /admin/users (I03)'),
+    element: <UsersPage />,
+    extraRoutes: [{ path: 'users/:userId', element: <UserDetailPage /> }], // ADM-04
   },
   {
     id: 'ADM-05', path: 'admins', label: 'Quản trị viên', group: 'Tài khoản', icon: ShieldCheck,
     access: { superAdmin: true }, owner: 'TV1',
-    element: pending('ADM-05', 'TV1', 'Quản lý Admin', 'API /admin/admins (I04)'),
+    element: <AdminsPage />,
   },
   {
     id: 'ADM-06', path: 'places', label: 'Địa điểm', group: 'Địa điểm', icon: MapPin,
@@ -88,6 +95,6 @@ export const adminPages: AdminPage[] = [
   {
     id: 'ADM-25', path: 'audit-logs', label: 'Nhật ký quản trị', group: 'Hệ thống', icon: History,
     access: { module: 'AUDIT', action: 'READ' }, owner: 'TV1',
-    element: pending('ADM-25', 'TV1', 'Nhật ký quản trị', 'API /admin/audit-logs (I06)'),
+    element: <AuditPage />,
   },
 ];
