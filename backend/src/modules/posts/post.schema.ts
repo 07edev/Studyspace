@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Schema, Types } from 'mongoose';
+import { Schema as MongooseSchema, Types } from 'mongoose';
 
 export enum PostStatus {
   DRAFT = 'DRAFT',
@@ -9,7 +9,7 @@ export enum PostStatus {
 
 @Schema({ collection: 'posts', timestamps: true })
 export class Post {
-  @Prop({ type: Schema.Types.ObjectId, required: true, index: true, ref: 'User' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, required: true, index: true, ref: 'User' })
   authorId: Types.ObjectId;
 
   @Prop({ type: String, required: true, trim: true, maxlength: 160 })
@@ -24,7 +24,7 @@ export class Post {
   @Prop({ type: String, enum: Object.values(PostStatus), default: PostStatus.PUBLISHED, index: true })
   status: PostStatus;
 
-  @Prop({ type: [Schema.Types.ObjectId], default: [] })
+  @Prop({ type: [MongooseSchema.Types.ObjectId], default: [] })
   imageFileIds: Types.ObjectId[];
 
   @Prop({ type: Number, default: 0, min: 0 })

@@ -9,7 +9,6 @@ import { PostSave } from './post-save.schema';
 import { CreatePostDto, PatchPostDto, PostsQuery } from './dto/posts.dto';
 
 const notFound = () => new ApiException(404, 'NOT_FOUND', 'Không tìm thấy bài viết.');
-const badId = () => new ApiException(404, 'NOT_FOUND', 'Không tìm thấy bài viết.');
 
 @Injectable()
 export class PostsService {
@@ -20,7 +19,7 @@ export class PostsService {
   ) {}
 
   private objectId(id: string) {
-    if (!isValidObjectId(id)) throw badId();
+    if (!isValidObjectId(id)) throw notFound();
     return new Types.ObjectId(id);
   }
 
@@ -44,12 +43,12 @@ export class PostsService {
       this.posts.countDocuments(filter),
     ]);
     const ids = rows.map(row => row._id);
-    const liked = viewerId && ids.length
-      ? await this.likes.find({ userId: this.objectId(viewerId), postId: { $in: ids } }).distinct('postId')
-      : [];
-    const saved = viewerId && ids.length
-      ? await this.saves.find({ userId: this.objectId(viewerId), postId: { $in: ids } }).distinct('postId')
-      : [];
+    const [liked, saved] = viewerId && ids.length
+      ? await Promise.all([
+          this.likes.find({ userId: this.objectId(viewerId), postId: { $in: ids } }).distinct('postId'),
+          this.saves.find({ userId: this.objectId(viewerId), postId: { $in: ids } }).distinct('postId'),
+        ])
+      : [[], []];
     const likedSet = new Set(liked.map(String));
     const savedSet = new Set(saved.map(String));
     return toPage(rows.map(row => this.present(row, likedSet.has(String(row._id)), savedSet.has(String(row._id)))), total, page, limit);
@@ -68,13 +67,10 @@ export class PostsService {
   }
 
   async create(userId: string, dto: CreatePostDto) {
-    // File ownership/READY checks are deliberately connected in C04 before image uploads are enabled.
+    // C04 sẽ xác minh file READY, owner và purpose trước khi bật upload ảnh.
     const post = await this.posts.create({
-      authorId: this.objectId(userId),
-      title: dto.title,
-      content: dto.content,
-      category: dto.category,
-      imageFileIds: (dto.imageFileIds ?? []).map(id => this.objectId(id)),
+      authorId: this.objectId(userId), title: dto.title, content: dto.content,
+      category: dto.category, imageFileIds: (dto.imageFileIds ?? []).map(id => this.objectId(id)),
       status: dto.status ?? PostStatus.PUBLISHED,
     });
     return this.present(post.toObject(), false, false);
@@ -165,19 +161,11 @@ export class PostsService {
 
   private present(post: any, liked: boolean, saved: boolean) {
     return {
-      id: String(post._id),
-      authorId: String(post.authorId),
-      title: post.title,
-      content: post.content,
-      category: post.category,
-      status: post.status,
+      id: String(post._id), authorId: String(post.authorId), title: post.title,
+      content: post.content, category: post.category, status: post.status,
       imageFileIds: (post.imageFileIds ?? []).map((id: Types.ObjectId) => String(id)),
-      likesCount: post.likesCount ?? 0,
-      commentsCount: post.commentsCount ?? 0,
-      liked,
-      saved,
-      createdAt: post.createdAt,
-      updatedAt: post.updatedAt,
+      likesCount: post.likesCount ?? 0, commentsCount: post.commentsCount ?? 0,
+      liked, saved, createdAt: post.createdAt, updatedAt: post.updatedAt,
     };
   }
 }
