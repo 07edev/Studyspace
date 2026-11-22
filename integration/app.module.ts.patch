@@ -1,0 +1,10 @@
+*** Begin Patch
+*** Update File: backend/src/app.module.ts
+@@
+ import { OutboxModule } from './modules/outbox/outbox.module';
++import { PostsModule } from './modules/posts/posts.module';
+@@
+         StatsModule,
++        PostsModule,
+         // TV2/TV3 register their feature modules here.
+*** End Patch
