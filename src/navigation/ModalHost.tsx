@@ -17,6 +17,14 @@ import { ContactVerifyForm } from '../features/profile/ContactVerifyForm';
 import { NotificationSettingsForm } from '../features/profile/NotificationSettingsForm';
 import { PrivacyForm } from '../features/profile/PrivacyForm';
 import { ProfileEditForm } from '../features/profile/ProfileEditForm';
+import {
+  DocumentDetailModal,
+  DocumentEditorModal,
+  PostCommentsModal,
+  PostEditorModal,
+  ReportContentModal,
+  Tv3FeatureModal,
+} from '../features/community/CommunityFeature';
 import { useSession } from '../shared/auth/AuthProvider';
 import { features } from '../features/pending/features';
 import { PendingFeature } from '../features/pending/PendingFeatureScreen';
@@ -38,6 +46,16 @@ function presentation(
       return { title: 'Đăng nhập để tiếp tục', size: 'C' };
     case 'feature':
       return { title: features[route.feature].title, size: 'L' };
+    case 'post-editor':
+      return { title: 'Viết bài', size: 'F' };
+    case 'document-editor':
+      return { title: 'Chia sẻ tài liệu', size: 'F' };
+    case 'post-comments':
+      return { title: 'Bình luận', size: 'L' };
+    case 'report-content':
+      return { title: 'Báo cáo nội dung', size: 'L' };
+    case 'document-detail':
+      return { title: 'Chi tiết tài liệu', size: 'L' };
     case 'settings':
       return { title: 'Cài đặt', size: signedIn ? 'F' : 'L' };
     case 'profile-edit':
@@ -122,7 +140,19 @@ function ModalContent({
         </View>
       );
     case 'feature':
-      return <PendingFeature feature={route.feature} />;
+      return features[route.feature].owner === 'TV3'
+        ? <Tv3FeatureModal feature={route.feature} />
+        : <PendingFeature feature={route.feature} />;
+    case 'post-editor':
+      return <PostEditorModal postId={route.postId} />;
+    case 'document-editor':
+      return <DocumentEditorModal />;
+    case 'post-comments':
+      return <PostCommentsModal postId={route.postId} />;
+    case 'report-content':
+      return <ReportContentModal targetType={route.targetType} targetId={route.targetId} />;
+    case 'document-detail':
+      return <DocumentDetailModal documentId={route.documentId} />;
     case 'settings':
       if (session.status === 'authenticated') {
         return <SettingsPanel />;

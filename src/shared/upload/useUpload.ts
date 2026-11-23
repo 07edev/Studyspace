@@ -4,6 +4,7 @@ import type { FileUploader, PickedFile, UploadRules } from './types';
 
 export type UploadState =
   | { phase: 'idle' }
+  | { phase: 'selection-failed'; message: string }
   | { phase: 'uploading'; file: PickedFile; progress: number }
   | { phase: 'ready'; file: PickedFile; fileId: string }
   | { phase: 'failed'; file: PickedFile; message: string };
@@ -71,7 +72,9 @@ export function useUpload(uploader: FileUploader, rules: UploadRules) {
             phase: 'failed',
             file,
             message:
-              caught instanceof ApiError ? caught.message : 'Tải lên chưa thành công. Vui lòng thử lại.',
+              caught instanceof ApiError || caught instanceof Error
+                ? caught.message
+                : 'Tải lên chưa thành công. Vui lòng thử lại.',
           });
         }
       }
@@ -90,11 +93,12 @@ export function useUpload(uploader: FileUploader, rules: UploadRules) {
         // Do not wait for the upload itself: the picker is free again as soon as it has started.
         start(file);
       }
-    } catch {
+    } catch (caught) {
       if (mounted.current) {
-        setState(prev =>
-          prev.phase === 'idle' ? { phase: 'idle' } : prev,
-        );
+        setState({
+          phase: 'selection-failed',
+          message: caught instanceof Error ? caught.message : 'Không thể mở bộ chọn tệp.',
+        });
       }
     } finally {
       busy.current = false;

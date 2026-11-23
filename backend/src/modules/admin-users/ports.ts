@@ -5,8 +5,8 @@ import type { Page } from '../../common/utils/page';
 // TV1 shows it on the admin user page through this port and never reads those collections.
 // Until an owner connects its kind, counts are left out of the response and the tab answers 503:
 // nothing is invented.
-export type ContentKind = 'posts' | 'documents' | 'reviews' | 'suggestions';
-export const CONTENT_KINDS: ContentKind[] = ['posts', 'documents', 'reviews', 'suggestions'];
+export type ContentKind = 'posts' | 'documents' | 'reports' | 'reviews' | 'suggestions';
+export const CONTENT_KINDS: ContentKind[] = ['posts', 'documents', 'reports', 'reviews', 'suggestions'];
 
 export abstract class UserContentRef {
   /** Number of items of this kind the user created, or undefined while the owner is not connected. */

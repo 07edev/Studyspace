@@ -40,6 +40,23 @@ export const queryKeys = {
     dashboard: (days: number) => ['stats', 'dashboard', days] as const,
     activity: (params: object) => ['stats', 'activity', params] as const,
   },
+  posts: {
+    all: ['posts'] as const,
+    list: (filters: object) => ['posts', 'list', filters] as const,
+  },
+  comments: {
+    all: ['comments'] as const,
+    list: (filters: object) => ['comments', 'list', filters] as const,
+  },
+  documents: {
+    all: ['documents'] as const,
+    list: (filters: object) => ['documents', 'list', filters] as const,
+  },
+  reports: {
+    all: ['reports'] as const,
+    list: (filters: object) => ['reports', 'list', filters] as const,
+    detail: (id: string) => ['reports', 'detail', id] as const,
+  },
 };
 
 type Params = Record<string, string | number | boolean | undefined>;

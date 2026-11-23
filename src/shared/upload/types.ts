@@ -1,7 +1,7 @@
 // Contract between the shared upload UI (TV1) and the file service (TV3).
 //
-// TV3 implements `FileUploader` once (init upload -> send bytes -> complete -> wait until READY) and
-// every screen that needs a file (avatar U06, post photos, document upload) reuses UploadPicker.
+// The shared uploader implements init -> signed PUT -> scan completion, then UploadPicker exposes
+// a fileId only after the backend confirms READY.
 
 export type PickedFile = {
   uri: string; // local file:// or content:// uri from the OS picker
@@ -35,3 +35,21 @@ export interface FileUploader {
 }
 
 export const IMAGE_RULES: UploadRules = { maxBytes: 10 * 1024 * 1024, mimeTypes: ['image/*'] };
+export const POST_IMAGE_RULES: UploadRules = {
+  maxBytes: 10 * 1024 * 1024,
+  mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+};
+export const DOCUMENT_RULES: UploadRules = {
+  maxBytes: 20 * 1024 * 1024,
+  mimeTypes: [
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'text/plain',
+  ],
+};
+export const EVIDENCE_RULES: UploadRules = {
+  maxBytes: 20 * 1024 * 1024,
+  mimeTypes: [...POST_IMAGE_RULES.mimeTypes, ...DOCUMENT_RULES.mimeTypes],
+};

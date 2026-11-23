@@ -34,6 +34,7 @@ Khi khai báo `@Prop` với kiểu union hoặc ObjectId, luôn ghi rõ `type:` 
 | Chống gửi lặp | `@Idempotent()` (client gửi header `Idempotency-Key`) |
 | Ghi nhật ký quản trị | `AuditService.record({...})` (tự che password/token/otp) |
 | Phát sự kiện sau commit | `OutboxService.enqueue({...})`; TV3 đăng ký `subscribe(eventType, handler)` |
+| Kiểm tra tệp READY | TV3 cung cấp `FileReadyRef` qua `FilesService`; kiểm tra owner và purpose |
 | Lỗi nghiệp vụ | `throw new ApiException(status, 'CODE', 'message', details?)` |
 
 Đăng ký module mới ở `src/app.module.ts` (mục `imports`). Mọi guard chạy toàn cục theo thứ tự
@@ -81,6 +82,22 @@ hoặc đổi quyền có hiệu lực ngay.
   Quyền có hiệu lực ngay vì server đọc quyền ở mỗi request; vô hiệu hóa/gỡ quyền thu hồi phiên. Không ai tự vô hiệu hóa hoặc gỡ chính mình, nên Super Admin cuối cùng luôn còn; mọi thay đổi lên Admin chạy tuần tự trong tiến trình (`common/utils/mutex.ts`) — chạy nhiều instance cần khóa ở database.
 - Phân trang dùng chung: `common/utils/page.ts` (`PageQuery`, `toPage`, `escapeRegex`).
 
+## Upload tệp (C04 — TV3)
+
+`POST /files/uploads` tạo upload URL ngắn hạn trên S3-compatible storage; client PUT trực tiếp
+theo `uploadUrl`/`uploadHeaders`, rồi gọi `POST /files/uploads/{fileId}/complete`. Backend xác
+minh size, Content-Type, chữ ký byte cơ bản và SHA-256 (nếu client gửi), sau đó quét ClamAV.
+Chỉ kết quả sạch mới chuyển `READY`; storage hoặc scanner thiếu/sập trả lỗi tường minh, không
+coi file là dùng được. `GET /files/uploads/{fileId}` chỉ cho owner xem trạng thái;
+`GET /files/{fileId}/access` trả URL GET ký ngắn hạn khi owner hoặc policy domain cho phép.
+
+Cấu hình `FILE_S3_BUCKET`, `FILE_S3_REGION`, tùy chọn `FILE_S3_ENDPOINT` (MinIO/S3-compatible),
+và `CLAMAV_HOST`/`CLAMAV_PORT`. AWS workload identity được ưu tiên; nếu dùng access key thì
+cấu hình cả `FILE_S3_ACCESS_KEY_ID` và `FILE_S3_SECRET_ACCESS_KEY` qua secret store. Production
+từ chối khởi động nếu thiếu bucket hoặc scanner. `.env.example` chỉ chứa tên biến, không có secret.
+Mặc định URL upload/access hết hạn sau 10/5 phút; hạn mức mặc định là 100 MB mỗi 24 giờ,
+có thể đổi qua `FILE_DAILY_QUOTA_BYTES`. Ảnh giới hạn 10 MB; tài liệu/bằng chứng giới hạn 20 MB.
+
 ## Nhật ký và thống kê (I06/I05)
 
 - `GET /admin/audit-logs`, `GET /admin/audit-logs/{id}` (quyền `AUDIT.READ`): chỉ đọc. Lọc `actorId`, `actorType`, `action` (chứa chuỗi, không phân biệt hoa thường, không phải mẫu), `resourceType`, `resourceId`, `requestId`, `from`, `to`; mới nhất trước.
@@ -112,9 +129,7 @@ onModuleInit() {
   `GET|PATCH /users/me/privacy`, `GET|PATCH /users/me/notification-settings` (PATCH nhận một phần các trường),
   `GET /users/{id}/public-profile` (công khai; chỉ tài khoản ACTIVE; hồ sơ PRIVATE chỉ trả `id`, `displayName`, `avatarUrl`),
   `POST /users/me/devices` (trả `{message, deviceId}`), `DELETE /users/me/devices/{deviceId}` (204).
-- **TV2/TV3 cần nối hai cổng** trong `src/modules/users/ports.ts` (đổi `useClass` ở `users.module.ts`):
-  `TaxonomyRef.assertValid` (trường/ngành/môn tồn tại, ngành thuộc trường; lỗi `UNIVERSITY_MAJOR_MISMATCH` 422) và
-  `FileReadyRef.assertReady` (tệp READY, đúng mục đích avatar, thuộc người dùng; lỗi `FILE_NOT_READY` 409).
-  Khi chưa nối, sửa trường/ngành/môn hoặc `avatarFileId` trả 503 (`TAXONOMY_NOT_CONNECTED`, `FILE_SERVICE_NOT_CONNECTED`) thay vì tin id chưa kiểm tra.
+- **TV2 cần nối** `TaxonomyRef.assertValid` trong `src/modules/users/ports.ts` (trường/ngành/môn tồn tại, ngành thuộc trường; lỗi `UNIVERSITY_MAJOR_MISMATCH` 422). Khi chưa nối, sửa trường/ngành/môn trả 503 `TAXONOMY_NOT_CONNECTED`.
+- TV3 đã nối `FileReadyRef.assertReady` qua `FilesService`: tệp phải READY, đúng purpose AVATAR và thuộc người dùng; nếu storage/scanner chưa cấu hình hoặc tệp chưa sẵn sàng thì không thể lưu `avatarFileId`.
 - `user_devices` lưu `pushTokenHash` (tra cứu/duy nhất) và thêm `pushToken` (`select: false`, không bao giờ trả ra API) vì gửi push cần token thật.
   Một token chỉ thuộc tài khoản đăng ký sau cùng; mỗi người tối đa 10 thiết bị (xóa cái cũ nhất).

@@ -10,11 +10,8 @@ import {
   type LucideIcon,
 } from 'lucide-react-native';
 import { HomeScreen } from '../features/home/HomeScreen';
-import {
-  CommunityScreen,
-  DocumentsScreen,
-  ExploreScreen,
-} from '../features/pending/PendingFeatureScreen';
+import { ExploreScreen } from '../features/pending/PendingFeatureScreen';
+import { CommunityScreen, DocumentsScreen } from '../features/community/CommunityFeature';
 import { ProfileScreen } from '../features/profile/ProfileScreen';
 import { colors } from '../shared/theme/tokens';
 import type { AppTabParamList } from './types';

@@ -16,6 +16,12 @@ import { JwtAuthGuard } from './modules/identity/guards/jwt-auth.guard';
 import { PermissionsGuard } from './modules/identity/guards/permissions.guard';
 import { IdentityModule } from './modules/identity/identity.module';
 import { OutboxModule } from './modules/outbox/outbox.module';
+import { PostsModule } from './modules/posts/posts.module';
+import { CommentsModule } from './modules/comments/comments.module';
+import { FilesModule } from './modules/files/files.module';
+import { DocumentsModule } from './modules/documents/documents.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { ReportsModule } from './modules/reports/reports.module';
 
 @Module({})
 export class AppModule {
@@ -43,7 +49,13 @@ export class AppModule {
         AdminUsersModule,
         AdminAdminsModule,
         StatsModule,
-        // TV2/TV3 register their feature modules here.
+        PostsModule,
+        CommentsModule,
+        FilesModule,
+        DocumentsModule,
+        NotificationsModule,
+        ReportsModule,
+        // Remaining TV2/TV3 feature modules are registered here as they are delivered.
       ],
       controllers: [HealthController],
       providers: [

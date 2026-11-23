@@ -40,9 +40,61 @@ export type UserAdminDetail = {
   user: AdminUserView;
   postCount?: number;
   documentCount?: number;
+  reportCount?: number;
   reviewCount?: number;
   suggestionCount?: number;
   moderationHistory: AuditEvent[];
+};
+
+export type AdminPost = {
+  id: string;
+  authorId: string;
+  title?: string;
+  content?: string;
+  category?: string;
+  status: 'DRAFT' | 'PUBLISHED' | 'HIDDEN' | 'DELETED';
+  likesCount: number;
+  commentsCount: number;
+  version: number;
+  createdAt: string;
+};
+
+export type AdminComment = {
+  id: string;
+  postId: string;
+  authorId: string;
+  content: string;
+  status: 'PUBLISHED' | 'HIDDEN' | 'DELETED';
+  replyCount: number;
+  version: number;
+  createdAt: string;
+};
+
+export type AdminDocument = {
+  id: string;
+  authorId: string;
+  title: string;
+  description?: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'HIDDEN' | 'DELETED';
+  format: 'PDF' | 'DOCX' | 'PPTX' | 'XLSX' | 'TXT';
+  version: number;
+  createdAt: string;
+};
+
+export type AdminReport = {
+  id: string;
+  reporterId: string;
+  targetType: 'POST' | 'COMMENT' | 'DOCUMENT';
+  targetId: string;
+  reasonCode: string;
+  description?: string;
+  evidenceFileIds: string[];
+  status: 'PENDING' | 'ASSIGNED' | 'RESOLVED' | 'DISMISSED';
+  assignedTo?: string;
+  decisionReason?: string;
+  version: number;
+  createdAt: string;
+  targetVersion?: number;
 };
 
 export type AdminUserStatusBody = { action: 'SUSPEND' | 'UNSUSPEND'; reason: string };

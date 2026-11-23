@@ -63,18 +63,20 @@ export function UploadPicker({ label, uploader, rules, onChange, chooseLabel = '
       )}
       {state.phase !== 'idle' && (
         <View style={styles.card}>
-          <View style={styles.row}>
-            {state.file.mimeType.startsWith('image/') ? (
-              <Image
-                source={{ uri: state.file.uri }}
-                style={styles.thumb}
-                accessibilityIgnoresInvertColors
-              />
-            ) : null}
-            <AppText style={styles.name} numberOfLines={1}>
-              {state.file.name}
-            </AppText>
-          </View>
+          {state.phase !== 'selection-failed' && (
+            <View style={styles.row}>
+              {state.file.mimeType.startsWith('image/') ? (
+                <Image
+                  source={{ uri: state.file.uri }}
+                  style={styles.thumb}
+                  accessibilityIgnoresInvertColors
+                />
+              ) : null}
+              <AppText style={styles.name} numberOfLines={1}>
+                {state.file.name}
+              </AppText>
+            </View>
+          )}
           {state.phase === 'uploading' && (
             <>
               <ProgressBar fraction={state.progress} />
@@ -82,6 +84,14 @@ export function UploadPicker({ label, uploader, rules, onChange, chooseLabel = '
                 Đang tải lên… {Math.round(state.progress * 100)}%
               </AppText>
               <Button variant="ghost" title="Hủy" onPress={clear} />
+            </>
+          )}
+          {state.phase === 'selection-failed' && (
+            <>
+              <AppText accessibilityLiveRegion="polite" variant="caption" style={styles.error}>
+                {state.message}
+              </AppText>
+              <Button variant="secondary" title="Thử chọn lại" onPress={choose} />
             </>
           )}
           {state.phase === 'ready' && (

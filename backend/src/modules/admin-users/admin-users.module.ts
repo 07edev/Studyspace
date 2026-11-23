@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
+import { ReportsModule } from '../reports/reports.module';
 import { AdminUsersController } from './admin-users.controller';
 import { AdminUsersService } from './admin-users.service';
-import { NotConnectedUserContentRef, UserContentRef } from './ports';
+import { UserContentRef } from './ports';
+import { Tv3UserContentRef } from '../reports/user-content-ref';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, ReportsModule],
   controllers: [AdminUsersController],
   providers: [
     AdminUsersService,
-    // TV2/TV3: replace `useClass` with your class that extends NotConnectedUserContentRef and
-    // overrides the kinds you own (see ports.ts). Until then counts are omitted and tabs answer 503.
-    { provide: UserContentRef, useClass: NotConnectedUserContentRef },
+    { provide: UserContentRef, useExisting: Tv3UserContentRef },
   ],
   exports: [AdminUsersService],
 })

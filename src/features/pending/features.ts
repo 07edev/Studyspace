@@ -48,6 +48,11 @@ export const features: Record<
     description: 'Theo dõi tài liệu đã chia sẻ và kết quả kiểm duyệt.',
     owner: 'TV3',
   },
+  'my-reports': {
+    title: 'Báo cáo của tôi',
+    description: 'Theo dõi trạng thái các báo cáo bạn đã gửi.',
+    owner: 'TV3',
+  },
   notifications: {
     title: 'Thông báo',
     description: 'Cập nhật tương tác mới và kết quả đóng góp của bạn.',

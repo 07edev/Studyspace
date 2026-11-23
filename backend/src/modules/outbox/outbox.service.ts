@@ -11,6 +11,7 @@ export type OutboxInput = {
   payload?: Record<string, unknown>;
 };
 export type OutboxHandler = (event: {
+  eventId: string;
   eventType: string;
   aggregateType: string;
   aggregateId: string;
@@ -70,6 +71,7 @@ export class OutboxService {
       try {
         for (const handler of this.handlers.get(event.eventType) ?? []) {
           await handler({
+            eventId: String(event._id),
             eventType: event.eventType,
             aggregateType: event.aggregateType,
             aggregateId: String(event.aggregateId),

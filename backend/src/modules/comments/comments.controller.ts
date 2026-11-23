@@ -2,8 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post as PostMeth
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, OptionalAuth } from '../../common/decorators/auth.decorators';
 import type { IdentityContext } from '../../common/identity';
-import { PageQuery } from '../../common/utils/page';
-import { CommentBodyDto } from './dto/comments.dto';
+import { CommentsQuery, CreateCommentDto, PatchCommentDto } from './dto/comments.dto';
 import { CommentsService } from './comments.service';
 
 @ApiTags('Comments')
@@ -14,7 +13,7 @@ export class CommentsController {
 
   @OptionalAuth()
   @Get('posts/:postId/comments')
-  list(@Param('postId') postId: string, @Query() query: PageQuery) {
+  list(@Param('postId') postId: string, @Query() query: CommentsQuery) {
     return this.comments.list(postId, query);
   }
 
@@ -22,7 +21,7 @@ export class CommentsController {
   create(
     @Param('postId') postId: string,
     @CurrentUser() actor: IdentityContext,
-    @Body() dto: CommentBodyDto,
+    @Body() dto: CreateCommentDto,
   ) {
     return this.comments.create(postId, actor.userId, dto);
   }
@@ -31,7 +30,7 @@ export class CommentsController {
   update(
     @Param('commentId') commentId: string,
     @CurrentUser() actor: IdentityContext,
-    @Body() dto: CommentBodyDto,
+    @Body() dto: PatchCommentDto,
   ) {
     return this.comments.update(commentId, actor.userId, dto);
   }

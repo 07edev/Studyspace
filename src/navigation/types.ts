@@ -16,6 +16,7 @@ export type FeatureId =
   | 'my-posts'
   | 'saved-posts'
   | 'my-documents'
+  | 'my-reports'
   | 'notifications';
 export type ModalRoute =
   | {
@@ -28,6 +29,11 @@ export type ModalRoute =
   | { name: 'session-ended'; reason: 'expired' | 'suspended' }
   | { name: 'auth-required'; reason: string }
   | { name: 'feature'; feature: FeatureId }
+  | { name: 'post-editor'; postId?: string }
+  | { name: 'document-editor' }
+  | { name: 'post-comments'; postId: string }
+  | { name: 'report-content'; targetType: 'POST' | 'COMMENT' | 'DOCUMENT'; targetId: string }
+  | { name: 'document-detail'; documentId: string }
   // U46 edit profile / U05 complete profile right after sign-up.
   | { name: 'profile-edit'; mode?: 'edit' | 'complete' }
   // U47: confirm an email change with the code that was sent.

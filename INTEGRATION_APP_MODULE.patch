@@ -1,9 +1,0 @@
-// 1. Add beside other feature-module imports:
-import { PostsModule } from './modules/posts/posts.module';
-import { CommentsModule } from './modules/comments/comments.module';
-
-// 2. In AppModule.register() -> imports array, add:
-PostsModule,
-CommentsModule,
-
-// Do not replace the rest of AppModule. Keep TV1/TV2 imports and providers unchanged.

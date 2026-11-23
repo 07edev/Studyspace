@@ -7,6 +7,21 @@ export type SmtpConfig = {
   from: string;
 };
 
+export type FileStorageConfig = {
+  s3Bucket?: string;
+  s3Region: string;
+  s3Endpoint?: string;
+  s3ForcePathStyle: boolean;
+  s3AccessKeyId?: string;
+  s3SecretAccessKey?: string;
+  uploadUrlTtlSeconds: number;
+  accessUrlTtlSeconds: number;
+  dailyQuotaBytes: number;
+  clamAvHost?: string;
+  clamAvPort: number;
+  clamAvTimeoutMs: number;
+};
+
 export type AppConfig = {
   nodeEnv: string;
   port: number;
@@ -19,6 +34,7 @@ export type AppConfig = {
   otpCooldownSeconds: number;
   googleClientIds: string[];
   smtp?: SmtpConfig;
+  files?: FileStorageConfig;
   disableRateLimit: boolean;
   corsOrigins: string[];
 };
@@ -65,6 +81,30 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     // Without email nobody can verify an account or reset a password.
     throw new Error('SMTP_HOST (and MAIL_FROM) must be configured in production');
   }
+  const s3AccessKeyId = env.FILE_S3_ACCESS_KEY_ID || undefined;
+  const s3SecretAccessKey = env.FILE_S3_SECRET_ACCESS_KEY || undefined;
+  if (Boolean(s3AccessKeyId) !== Boolean(s3SecretAccessKey)) {
+    throw new Error('FILE_S3_ACCESS_KEY_ID and FILE_S3_SECRET_ACCESS_KEY must be configured together');
+  }
+  const files: FileStorageConfig = {
+    s3Bucket: env.FILE_S3_BUCKET || undefined,
+    s3Region: env.FILE_S3_REGION || 'us-east-1',
+    s3Endpoint: env.FILE_S3_ENDPOINT || undefined,
+    s3ForcePathStyle: env.FILE_S3_FORCE_PATH_STYLE
+      ? env.FILE_S3_FORCE_PATH_STYLE === 'true'
+      : Boolean(env.FILE_S3_ENDPOINT),
+    s3AccessKeyId,
+    s3SecretAccessKey,
+    uploadUrlTtlSeconds: int(env.FILE_UPLOAD_URL_TTL_SECONDS, 600),
+    accessUrlTtlSeconds: int(env.FILE_ACCESS_URL_TTL_SECONDS, 300),
+    dailyQuotaBytes: int(env.FILE_DAILY_QUOTA_BYTES, 100_000_000),
+    clamAvHost: env.CLAMAV_HOST || undefined,
+    clamAvPort: int(env.CLAMAV_PORT, 3310),
+    clamAvTimeoutMs: int(env.CLAMAV_TIMEOUT_MS, 30_000),
+  };
+  if (nodeEnv === 'production' && (!files.s3Bucket || !files.clamAvHost)) {
+    throw new Error('FILE_S3_BUCKET and CLAMAV_HOST must be configured in production');
+  }
   return {
     nodeEnv,
     port: int(env.PORT, 3000),
@@ -77,6 +117,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     otpCooldownSeconds: int(env.OTP_COOLDOWN_SECONDS, 60),
     googleClientIds: list(env.GOOGLE_CLIENT_IDS),
     smtp,
+    files,
     // Only honoured outside production so it cannot be left on by mistake.
     disableRateLimit: env.RATE_LIMIT_DISABLED === 'true' && nodeEnv !== 'production',
     corsOrigins: list(env.CORS_ORIGINS),

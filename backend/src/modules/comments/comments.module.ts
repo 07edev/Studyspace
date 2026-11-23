@@ -4,6 +4,9 @@ import { Post, PostSchema } from '../posts/post.schema';
 import { Comment, CommentSchema } from './comment.schema';
 import { CommentsController } from './comments.controller';
 import { CommentsService } from './comments.service';
+import { AdminCommentsController } from './admin-comments.controller';
+import { AuditModule } from '../audit/audit.module';
+import { OutboxModule } from '../outbox/outbox.module';
 
 @Module({
   imports: [
@@ -11,8 +14,10 @@ import { CommentsService } from './comments.service';
       { name: Comment.name, schema: CommentSchema },
       { name: Post.name, schema: PostSchema },
     ]),
+    AuditModule,
+    OutboxModule,
   ],
-  controllers: [CommentsController],
+  controllers: [CommentsController, AdminCommentsController],
   providers: [CommentsService],
   exports: [CommentsService],
 })

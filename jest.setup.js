@@ -5,6 +5,20 @@ jest.mock(
 jest.mock('react-native-screens', () =>
   jest.requireActual('react-native-screens/mock'),
 );
+jest.mock('@react-native-documents/picker', () => ({
+  pick: jest.fn(async () => []),
+  types: {
+    images: 'image/*',
+    pdf: 'application/pdf',
+    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    plainText: 'text/plain',
+  },
+  errorCodes: {OPERATION_CANCELED: 'OPERATION_CANCELED'},
+  isErrorWithCode: error =>
+    typeof error === 'object' && error !== null && 'code' in error,
+}));
 // Native secure storage does not exist under Jest; an in-memory stand-in keeps the same API.
 jest.mock('react-native-keychain', () => {
   const store = new Map();

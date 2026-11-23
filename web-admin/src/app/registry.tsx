@@ -10,6 +10,12 @@ import { ActivityPage } from '../features/stats/ActivityPage';
 import { DashboardPage } from '../features/stats/DashboardPage';
 import { UserDetailPage } from '../features/users/UserDetailPage';
 import { UsersPage } from '../features/users/UsersPage';
+import {
+  CommentsAdminPage,
+  DocumentsAdminPage,
+  PostsAdminPage,
+  ReportsAdminPage,
+} from '../features/content/ContentPages';
 import { PendingPage } from '../pages/PendingPage';
 
 /**
@@ -75,22 +81,22 @@ export const adminPages: AdminPage[] = [
   {
     id: 'ADM-16', path: 'posts', label: 'Bài viết', group: 'Cộng đồng', icon: FileText,
     access: { module: 'POSTS', action: 'READ' }, owner: 'TV3',
-    element: pending('ADM-16', 'TV3', 'Quản lý bài viết'),
+    element: <PostsAdminPage />,
   },
   {
     id: 'ADM-17', path: 'comments', label: 'Bình luận', group: 'Cộng đồng', icon: MessageSquare,
     access: { module: 'COMMENTS', action: 'READ' }, owner: 'TV3',
-    element: pending('ADM-17', 'TV3', 'Quản lý bình luận'),
+    element: <CommentsAdminPage />,
   },
   {
     id: 'ADM-18', path: 'documents', label: 'Tài liệu', group: 'Cộng đồng', icon: BookOpen,
     access: { module: 'DOCUMENTS', action: 'READ' }, owner: 'TV3',
-    element: pending('ADM-18', 'TV3', 'Danh sách tài liệu'),
+    element: <DocumentsAdminPage />,
   },
   {
     id: 'ADM-22', path: 'reports', label: 'Báo cáo', group: 'Cộng đồng', icon: Flag,
     access: { module: 'REPORTS', action: 'READ' }, owner: 'TV3',
-    element: pending('ADM-22', 'TV3', 'Danh sách báo cáo'),
+    element: <ReportsAdminPage />,
   },
   {
     id: 'ADM-25', path: 'audit-logs', label: 'Nhật ký quản trị', group: 'Hệ thống', icon: History,
