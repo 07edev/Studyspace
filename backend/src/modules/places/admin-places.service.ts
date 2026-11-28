@@ -22,6 +22,8 @@ import {
 } from './place.enums';
 import { toAdminPlaceDto, toPlaceHistoryDto } from './place.mapper';
 import { PlaceFileRef } from './ports/place-file.port';
+import { CandidateTokenService } from './providers/candidate-token.service';
+import { DuplicateCheckService } from './providers/duplicate-check.service';
 import { PlaceHistoryEntity } from './schemas/place-history.schema';
 import {
   PlaceEntity,
@@ -43,6 +45,8 @@ export class AdminPlacesService {
     private readonly attributes: PlaceAttributesService,
     private readonly files: PlaceFileRef,
     private readonly audit: AuditService,
+    private readonly candidateTokens: CandidateTokenService,
+    private readonly duplicateCheck: DuplicateCheckService,
   ) {}
 
   private buildImages(imageFileIds?: string[], coverFileId?: string | null): ImageRefDoc[] {
@@ -120,6 +124,26 @@ export class AdminPlacesService {
     if (dto.imageFileIds && dto.imageFileIds.length > 0) {
       await this.files.assertReady(dto.imageFileIds, actor.userId, 'PLACE_IMAGE');
     }
+
+    const sources: PlaceSourceDoc[] = [...extraSources];
+    if (dto.importCandidateToken) {
+      const verifiedSource = this.candidateTokens.verify(dto.importCandidateToken);
+      sources.push(verifiedSource);
+    }
+
+    const dupResult = await this.duplicateCheck.check({
+      name: dto.name,
+      location: dto.location,
+      address: dto.address,
+    });
+    if (dupResult.requiresReview && !dto.duplicateOverrideReason) {
+      throw new ApiException(
+        409,
+        'DUPLICATE_SUSPECTED',
+        'Phát hiện địa điểm có khả năng trùng lặp. Hãy kiểm tra trùng hoặc cung cấp lý do xác nhận tạo mới.',
+      );
+    }
+
     const images = this.buildImages(dto.imageFileIds, dto.coverFileId);
 
     const created = await this.places.create({
@@ -139,7 +163,7 @@ export class AdminPlacesService {
       studySuitability: dto.studySuitability ?? StudySuitability.UNKNOWN,
       attributes: cleanedAttrs,
       fieldStates: [],
-      sources: extraSources,
+      sources,
       origin: dto.origin,
       status: targetStatus,
       createdBy: new Types.ObjectId(actor.userId),

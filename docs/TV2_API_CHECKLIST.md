@@ -60,8 +60,8 @@ Trạng thái: `TODO` = chưa làm; `BE CODE` = đã viết BE + typecheck/build
 | --- | --- | --- | --- | --- | --- |
 | BE CODE | `GET /admin/places` | `ADMIN:PLACES.READ` | `none → Page<Place>` | `200` | `ADM-06,ADM-10,A16,A26,A31` |
 | BE CODE | `GET /admin/places/{placeId}` | `ADMIN:PLACES.READ` | `none → Place` | `200` | `ADM-10,A16,A26,A31` |
-| TODO | `GET /admin/place-candidates/search` | `ADMIN:PLACES.CREATE` | `none → Page<PlaceCandidate>` | `200` | `ADM-08` |
-| TODO | `POST /admin/places/duplicate-check` | `ADMIN:PLACES.CREATE` | `DuplicateCheck → DuplicateResult` | `200` | `ADM-08,A15` |
+| BE CODE | `GET /admin/place-candidates/search` | `ADMIN:PLACES.CREATE` | `none → Page<PlaceCandidate>` | `200` | `ADM-08` |
+| BE CODE | `POST /admin/places/duplicate-check` | `ADMIN:PLACES.CREATE` | `DuplicateCheck → DuplicateResult` | `200` | `ADM-08,A15` |
 | BE CODE | `POST /admin/places` | `ADMIN:PLACES.CREATE` | `PlaceUpsert → Place` | `201` | `ADM-06,ADM-08,ADM-09,A15,A22` |
 | BE CODE | `PATCH /admin/places/{placeId}` | `ADMIN:PLACES.UPDATE` | `PlacePatch → Place` | `200` | `ADM-06,ADM-09,ADM-10,A13,A14,A22,A24,A25` |
 | BE CODE | `PATCH /admin/places/{placeId}/status` | `ADMIN:PLACES.UPDATE` | `PlaceStatusPatch → Place` | `200` | `ADM-06,A13,A14` |
