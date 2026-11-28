@@ -6,6 +6,10 @@ import type { ReactNode } from 'react';
 import type { Access } from '../auth/permissions';
 import { AdminsPage } from '../features/admins/AdminsPage';
 import { AuditPage } from '../features/audit/AuditPage';
+import { PlaceDetailPage } from '../features/places/PlaceDetailPage';
+import { PlaceFormPage } from '../features/places/PlaceFormPage';
+import { PlaceImportPage } from '../features/places/PlaceImportPage';
+import { PlacesPage } from '../features/places/PlacesPage';
 import { ActivityPage } from '../features/stats/ActivityPage';
 import { DashboardPage } from '../features/stats/DashboardPage';
 import { UserDetailPage } from '../features/users/UserDetailPage';
@@ -60,7 +64,13 @@ export const adminPages: AdminPage[] = [
   {
     id: 'ADM-06', path: 'places', label: 'Địa điểm', group: 'Địa điểm', icon: MapPin,
     access: { module: 'PLACES', action: 'READ' }, owner: 'TV2',
-    element: pending('ADM-06', 'TV2', 'Danh sách địa điểm'),
+    element: <PlacesPage />,
+    extraRoutes: [
+      { path: 'places/import', element: <PlaceImportPage /> }, // ADM-08
+      { path: 'places/new', element: <PlaceFormPage /> }, // ADM-09 (create)
+      { path: 'places/:placeId/edit', element: <PlaceFormPage /> }, // ADM-09 (edit)
+      { path: 'places/:placeId', element: <PlaceDetailPage /> }, // ADM-10
+    ],
   },
   {
     id: 'ADM-13', path: 'place-suggestions', label: 'Đề xuất địa điểm', group: 'Địa điểm', icon: Lightbulb,

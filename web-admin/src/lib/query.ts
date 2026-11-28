@@ -40,6 +40,33 @@ export const queryKeys = {
     dashboard: (days: number) => ['stats', 'dashboard', days] as const,
     activity: (params: object) => ['stats', 'activity', params] as const,
   },
+  places: {
+    all: ['places'] as const,
+    list: (filters: object) => ['places', 'list', filters] as const,
+    detail: (id: string) => ['places', 'detail', id] as const,
+    history: (id: string) => ['places', 'history', id] as const,
+    candidates: (filters: object) => ['places', 'candidates', filters] as const,
+  },
+  placeAttributes: {
+    all: ['placeAttributes'] as const,
+    public: (category?: string) => ['placeAttributes', 'public', category ?? ''] as const,
+    admin: (filters: object = {}) => ['placeAttributes', 'admin', filters] as const,
+  },
+  suggestions: {
+    all: ['suggestions'] as const,
+    list: (filters: object) => ['suggestions', 'list', filters] as const,
+    detail: (id: string) => ['suggestions', 'detail', id] as const,
+  },
+  reviews: {
+    all: ['reviews'] as const,
+    list: (filters: object) => ['reviews', 'list', filters] as const,
+  },
+  taxonomies: {
+    all: ['taxonomies'] as const,
+    amenities: ['taxonomies', 'amenities'] as const,
+    provinces: ['taxonomies', 'provinces'] as const,
+    wards: (provinceCode: string) => ['taxonomies', 'wards', provinceCode] as const,
+  },
 };
 
 type Params = Record<string, string | number | boolean | undefined>;

@@ -12,12 +12,26 @@ export const ACTION_LABEL: Record<string, string> = {
   PASSWORD_RESET: 'Đặt lại mật khẩu',
   PASSWORD_CHANGED: 'Đổi mật khẩu',
   ACCOUNT_DELETION_REQUESTED: 'Yêu cầu xóa tài khoản',
+  PLACE_CREATED: 'Tạo địa điểm',
+  PLACE_UPDATED: 'Cập nhật địa điểm',
+  PLACE_STATUS_CHANGED: 'Đổi trạng thái địa điểm',
+  PLACE_FIELD_STATE_UPDATED: 'Cập nhật trạng thái trường',
+  PLACE_ATTRIBUTE_CREATED: 'Tạo thuộc tính địa điểm',
+  PLACE_ATTRIBUTE_UPDATED: 'Cập nhật thuộc tính địa điểm',
+  SUGGESTION_APPROVED: 'Duyệt đề xuất địa điểm',
+  SUGGESTION_REJECTED: 'Từ chối đề xuất địa điểm',
+  REVIEW_HIDDEN: 'Ẩn đánh giá',
+  REVIEW_RESTORED: 'Khôi phục đánh giá',
 };
 export const actionLabel = (action: string) => ACTION_LABEL[action] ?? action;
 
 export const RESOURCE_TYPE_LABEL: Record<string, string> = {
   user: 'Người dùng',
   admin: 'Quản trị viên',
+  place: 'Địa điểm',
+  place_suggestion: 'Đề xuất địa điểm',
+  review: 'Đánh giá',
+  place_attribute: 'Thuộc tính địa điểm',
 };
 export const resourceTypeLabel = (type: string) => RESOURCE_TYPE_LABEL[type] ?? type;
 
