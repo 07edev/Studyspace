@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { ApiException } from '../../common/api-error';
 import type { Page } from '../../common/utils/page';
 
@@ -19,9 +20,40 @@ export abstract class UserContentRef {
   ): Promise<Page<unknown> | undefined>;
 }
 
+export type UserContentKindHandler = {
+  count: (userId: string) => Promise<number>;
+  list: (userId: string, paging: { page: number; limit: number }) => Promise<Page<unknown>>;
+};
+
 /**
- * Default provider. TV2/TV3: extend it, override the kinds you own and register your class in
- * admin-users.module.ts. Kinds you do not override stay "not connected".
+ * Registry allowing TV2 (reviews, suggestions) and TV3 (posts, documents) to register their own
+ * ContentKinds in onModuleInit() without colliding or overwriting each other's provider binding.
+ */
+@Injectable()
+export class UserContentRegistry extends UserContentRef {
+  private readonly handlers = new Map<ContentKind, UserContentKindHandler>();
+
+  register(kind: ContentKind, handler: UserContentKindHandler) {
+    this.handlers.set(kind, handler);
+  }
+
+  async count(kind: ContentKind, userId: string): Promise<number | undefined> {
+    const handler = this.handlers.get(kind);
+    return handler ? handler.count(userId) : undefined;
+  }
+
+  async list(
+    kind: ContentKind,
+    userId: string,
+    paging: { page: number; limit: number },
+  ): Promise<Page<unknown> | undefined> {
+    const handler = this.handlers.get(kind);
+    return handler ? handler.list(userId, paging) : undefined;
+  }
+}
+
+/**
+ * Default provider kept for backward compatibility and tests.
  */
 export class NotConnectedUserContentRef extends UserContentRef {
   async count(): Promise<number | undefined> {

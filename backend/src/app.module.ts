@@ -14,9 +14,11 @@ import { HealthController } from './modules/health/health.controller';
 import { IdempotencyModule } from './modules/idempotency/idempotency.module';
 import { JwtAuthGuard } from './modules/identity/guards/jwt-auth.guard';
 import { PermissionsGuard } from './modules/identity/guards/permissions.guard';
+import { FavoritesModule } from './modules/favorites/favorites.module';
 import { IdentityModule } from './modules/identity/identity.module';
 import { OutboxModule } from './modules/outbox/outbox.module';
 import { PlacesModule } from './modules/places/places.module';
+import { ReviewsModule } from './modules/reviews/reviews.module';
 import { TaxonomyModule } from './modules/taxonomy/taxonomy.module';
 
 @Module({})
@@ -48,6 +50,8 @@ export class AppModule {
         // TV2 feature modules
         TaxonomyModule,
         PlacesModule,
+        FavoritesModule,
+        ReviewsModule,
         // TV3 register their feature modules here.
       ],
       controllers: [HealthController],

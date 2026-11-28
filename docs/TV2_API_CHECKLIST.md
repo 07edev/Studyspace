@@ -25,25 +25,25 @@ Trạng thái: `TODO` = chưa làm; `BE CODE` = đã viết BE + typecheck/build
 | BE CODE | `GET /places/map` | `PUBLIC` | `none → Page<PlaceMapFeature>` | `200` | `USR-08,U12` |
 | BE CODE | `GET /places/facets` | `PUBLIC` | `none → PlaceFacets` | `200` | `USR-08,U10` |
 | BE CODE | `GET /places/{placeId}` | `PUBLIC` | `none → Place` | `200` | `U12,U13,U15,U24` |
-| TODO | `GET /places/{placeId}/reviews` | `PUBLIC` | `none → Page<Review>` | `200` | `U15` |
+| BE CODE | `GET /places/{placeId}/reviews` | `PUBLIC` | `none → Page<Review>` | `200` | `U15` |
 | BE CODE | `GET /places/{placeId}/similar` | `PUBLIC` | `none → Page<Place>` | `200` | `—` |
 
 ## Favorites (3 endpoint)
 
 | Trạng thái | Method và path | Scope | Request → Data DTO | HTTP | UI |
 | --- | --- | --- | --- | --- | --- |
-| TODO | `GET /users/me/favorites/places` | `USER` | `none → Page<Place>` | `200` | `USR-35,U18` |
-| TODO | `PUT /users/me/favorites/places/{placeId}` | `USER` | `none → BooleanResult` | `200` | `U13` |
-| TODO | `DELETE /users/me/favorites/places/{placeId}` | `USER` | `none → none` | `204` | `U13,U18` |
+| BE CODE | `GET /users/me/favorites/places` | `USER` | `none → Page<Place>` | `200` | `USR-35,U18` |
+| BE CODE | `PUT /users/me/favorites/places/{placeId}` | `USER` | `none → BooleanResult` | `200` | `U13` |
+| BE CODE | `DELETE /users/me/favorites/places/{placeId}` | `USER` | `none → none` | `204` | `U13,U18` |
 
 ## Reviews (4 endpoint)
 
 | Trạng thái | Method và path | Scope | Request → Data DTO | HTTP | UI |
 | --- | --- | --- | --- | --- | --- |
-| TODO | `POST /places/{placeId}/reviews` | `USER` | `ReviewWrite → Review` | `201` | `U16` |
-| TODO | `PATCH /reviews/{reviewId}` | `OWNER` | `ReviewWrite → Review` | `200` | `U16` |
-| TODO | `DELETE /reviews/{reviewId}` | `OWNER` | `none → none` | `204` | `U17` |
-| TODO | `GET /users/me/reviews` | `USER` | `none → Page<Review>` | `200` | `—` |
+| BE CODE | `POST /places/{placeId}/reviews` | `USER` | `ReviewWrite → Review` | `201` | `U16` |
+| BE CODE | `PATCH /reviews/{reviewId}` | `OWNER` | `ReviewWrite → Review` | `200` | `U16` |
+| BE CODE | `DELETE /reviews/{reviewId}` | `OWNER` | `none → none` | `204` | `U17` |
+| BE CODE | `GET /users/me/reviews` | `USER` | `none → Page<Review>` | `200` | `—` |
 
 ## PlaceSuggestions (4 endpoint)
 
@@ -83,6 +83,6 @@ Trạng thái: `TODO` = chưa làm; `BE CODE` = đã viết BE + typecheck/build
 
 | Trạng thái | Method và path | Scope | Request → Data DTO | HTTP | UI |
 | --- | --- | --- | --- | --- | --- |
-| TODO | `GET /admin/reviews` | `ADMIN:REVIEWS.READ` | `none → Page<Review>` | `200` | `ADM-15,A27,A32` |
-| TODO | `GET /admin/reviews/{reviewId}` | `ADMIN:REVIEWS.READ` | `none → Review` | `200` | `A27,A32` |
-| TODO | `PATCH /admin/reviews/{reviewId}/moderation` | `ADMIN:REVIEWS.MODERATE` | `ContentModerate → Review` | `200` | `ADM-15,A33,A34` |
+| BE CODE | `GET /admin/reviews` | `ADMIN:REVIEWS.READ` | `none → Page<Review>` | `200` | `ADM-15,A27,A32` |
+| BE CODE | `GET /admin/reviews/{reviewId}` | `ADMIN:REVIEWS.READ` | `none → Review` | `200` | `A27,A32` |
+| BE CODE | `PATCH /admin/reviews/{reviewId}/moderation` | `ADMIN:REVIEWS.MODERATE` | `ContentModerate → Review` | `200` | `ADM-15,A33,A34` |
