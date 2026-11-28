@@ -10,8 +10,11 @@ import { PlaceDetailPage } from '../features/places/PlaceDetailPage';
 import { PlaceFormPage } from '../features/places/PlaceFormPage';
 import { PlaceImportPage } from '../features/places/PlaceImportPage';
 import { PlacesPage } from '../features/places/PlacesPage';
+import { ReviewsPage } from '../features/reviews/ReviewsPage';
 import { ActivityPage } from '../features/stats/ActivityPage';
 import { DashboardPage } from '../features/stats/DashboardPage';
+import { SuggestionDetailPage } from '../features/suggestions/SuggestionDetailPage';
+import { SuggestionsPage } from '../features/suggestions/SuggestionsPage';
 import { UserDetailPage } from '../features/users/UserDetailPage';
 import { UsersPage } from '../features/users/UsersPage';
 import { PendingPage } from '../pages/PendingPage';
@@ -75,12 +78,13 @@ export const adminPages: AdminPage[] = [
   {
     id: 'ADM-13', path: 'place-suggestions', label: 'Đề xuất địa điểm', group: 'Địa điểm', icon: Lightbulb,
     access: { module: 'SUGGESTIONS', action: 'READ' }, owner: 'TV2',
-    element: pending('ADM-13', 'TV2', 'Danh sách đề xuất'),
+    element: <SuggestionsPage />,
+    extraRoutes: [{ path: 'place-suggestions/:suggestionId', element: <SuggestionDetailPage /> }], // ADM-14
   },
   {
     id: 'ADM-15', path: 'reviews', label: 'Đánh giá', group: 'Địa điểm', icon: Star,
     access: { module: 'REVIEWS', action: 'READ' }, owner: 'TV2',
-    element: pending('ADM-15', 'TV2', 'Quản lý đánh giá'),
+    element: <ReviewsPage />,
   },
   {
     id: 'ADM-16', path: 'posts', label: 'Bài viết', group: 'Cộng đồng', icon: FileText,

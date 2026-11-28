@@ -23,8 +23,8 @@ Ngày lập: 28/11/2026. Chủ sở hữu: TV2 (Places, Explore, Taxonomy, Revie
 | M5 | `be` | `phuc/feature/be/favorites-reviews` | P06 + P07 (BE) | DONE (e2e chờ DB) |
 | M6 | `be` | `phuc/feature/be/place-suggestions` | P08 + P09 (BE) | DONE (e2e chờ DB) |
 | M7 | `web-admin` | `phuc/feature/web-admin/places-management` | P03 + P04 + P05 (Web) | DONE |
-| M8 | `web-admin` | `phuc/feature/web-admin/suggestions-reviews` | P07 + P09 (Web) | DOING |
-| M9 | `app` | `phuc/feature/app/taxonomy-explore-places` | P01 + P02 + P10 (App) | TODO |
+| M8 | `web-admin` | `phuc/feature/web-admin/suggestions-reviews` | P07 + P09 (Web) | DONE |
+| M9 | `app` | `phuc/feature/app/taxonomy-explore-places` | P01 + P02 + P10 (App) | DOING |
 | M10 | `app` | `phuc/feature/app/favorites-reviews-suggestions` | P06 + P07 + P08 + P10 (App) | TODO |
 
 ## 3. Nhật ký tiến độ và bằng chứng kiểm tra
@@ -39,3 +39,4 @@ Ngày lập: 28/11/2026. Chủ sở hữu: TV2 (Places, Explore, Taxonomy, Revie
 | 28/11/2026 | M5 | Nâng cấp `UserContentRegistry` tương thích ngược TV1/TV3, triển khai `FavoritesModule` (3 API + `isFavorite`), `ReviewsModule` (8 API, unique partial index, tính lại `ratingAverage`/`ratingCount`, moderation + `AuditService`, `moderateFromReport`) | `backend` typecheck + build + unit tests (`favorites-reviews.unit.spec.ts` + toàn bộ unit tests trước đó) đạt; e2e chờ MongoDB local |
 | 28/11/2026 | M6 | Triển khai `PlaceSuggestionsModule` (7 API user/admin, allow-list `fieldPath`, kiểm `fieldStates.locked`, CAS `expectedVersion`, `@Idempotent()`, `runInOptionalTransaction`, `place_history`, `AuditService`, `OutboxService` `SUGGESTION_DECIDED`, `pendingSuggestions` Stats, `UserContentRegistry`). Chốt đủ 44/44 API Backend TV2 | `backend` typecheck + build + 6/6 bộ unit tests đạt; e2e chờ MongoDB local |
 | 28/11/2026 | M7 | Cài `leaflet` + `@types/leaflet`, mở rộng `queryKeys` & nhãn Audit TV2, triển khai 4 trang Web Admin (`ADM-06` PlacesPage, `ADM-08` PlaceImportPage, `ADM-09` PlaceFormPage, `ADM-10` PlaceDetailPage) và đầy đủ modal `A12–A27` (bản đồ OSM, giờ mở cửa 7 ngày, thuộc tính động, quản lý ảnh, kiểm tra trùng, xác minh/khóa trường, diff lịch sử) + `places.test.tsx` | `web-admin` typecheck + Vite build + Vitest 10/10 files (118/118 tests, Node v24.15.0) đạt |
+| 28/11/2026 | M8 | Triển khai `ADM-13` SuggestionsPage (+ `A28`), `ADM-14` SuggestionDetailPage (+ `A15`, `A29`, `A30`, `A31` với `expectedVersion` & `Idempotency-Key`), `ADM-15` ReviewsPage (+ `A32`, `A33`, `A34`), nâng cấp bảng tab `reviews` & `suggestions` trong `UserDetailPage` (`ADM-04`), thêm `suggestions.test.tsx` & `reviews.test.tsx`. Hoàn tất 7/7 trang & 23/23 modal Web Admin TV2 | `web-admin` typecheck + Vite build + Vitest 12/12 files (125/125 tests, Node v24.15.0) đạt |

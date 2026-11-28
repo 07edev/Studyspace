@@ -75,14 +75,14 @@ Trạng thái: `TODO` = chưa làm; `BE CODE` = đã viết BE + typecheck/build
 
 | Trạng thái | Method và path | Scope | Request → Data DTO | HTTP | UI |
 | --- | --- | --- | --- | --- | --- |
-| BE CODE | `GET /admin/place-suggestions` | `ADMIN:SUGGESTIONS.READ` | `none → Page<Suggestion>` | `200` | `ADM-13,ADM-14,A28,A31` |
-| BE CODE | `GET /admin/place-suggestions/{suggestionId}` | `ADMIN:SUGGESTIONS.READ` | `none → Suggestion` | `200` | `ADM-13,ADM-14,A28,A31` |
-| BE CODE | `POST /admin/place-suggestions/{suggestionId}/decision` | `ADMIN:SUGGESTIONS.MODERATE` | `ModerationDecision → Suggestion` | `200` | `ADM-14,A29,A30` |
+| DONE | `GET /admin/place-suggestions` | `ADMIN:SUGGESTIONS.READ` | `none → Page<Suggestion>` | `200` | `ADM-13,ADM-14,A28,A31` |
+| DONE | `GET /admin/place-suggestions/{suggestionId}` | `ADMIN:SUGGESTIONS.READ` | `none → Suggestion` | `200` | `ADM-13,ADM-14,A28,A31` |
+| DONE | `POST /admin/place-suggestions/{suggestionId}/decision` | `ADMIN:SUGGESTIONS.MODERATE` | `ModerationDecision → Suggestion` | `200` | `ADM-14,A29,A30` |
 
 ## AdminReviews (3 endpoint)
 
 | Trạng thái | Method và path | Scope | Request → Data DTO | HTTP | UI |
 | --- | --- | --- | --- | --- | --- |
-| BE CODE | `GET /admin/reviews` | `ADMIN:REVIEWS.READ` | `none → Page<Review>` | `200` | `ADM-15,A27,A32` |
-| BE CODE | `GET /admin/reviews/{reviewId}` | `ADMIN:REVIEWS.READ` | `none → Review` | `200` | `A27,A32` |
-| BE CODE | `PATCH /admin/reviews/{reviewId}/moderation` | `ADMIN:REVIEWS.MODERATE` | `ContentModerate → Review` | `200` | `ADM-15,A33,A34` |
+| DONE | `GET /admin/reviews` | `ADMIN:REVIEWS.READ` | `none → Page<Review>` | `200` | `ADM-15,A27,A32` |
+| DONE | `GET /admin/reviews/{reviewId}` | `ADMIN:REVIEWS.READ` | `none → Review` | `200` | `A27,A32` |
+| DONE | `PATCH /admin/reviews/{reviewId}/moderation` | `ADMIN:REVIEWS.MODERATE` | `ContentModerate → Review` | `200` | `ADM-15,A33,A34` |
