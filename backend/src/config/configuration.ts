@@ -7,6 +7,16 @@ export type SmtpConfig = {
   from: string;
 };
 
+export type PlaceProvidersConfig = {
+  osmOverpassUrl: string;
+  osmNominatimUrl: string;
+  osmUserAgent: string;
+  wikidataApiUrl: string;
+  googlePlacesApiKey?: string;
+  candidateTokenTtlSeconds: number;
+  providerTimeoutMs: number;
+};
+
 export type AppConfig = {
   nodeEnv: string;
   port: number;
@@ -21,6 +31,7 @@ export type AppConfig = {
   smtp?: SmtpConfig;
   disableRateLimit: boolean;
   corsOrigins: string[];
+  placeProviders?: PlaceProvidersConfig;
 };
 
 export const APP_CONFIG = 'APP_CONFIG';
@@ -80,5 +91,14 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     // Only honoured outside production so it cannot be left on by mistake.
     disableRateLimit: env.RATE_LIMIT_DISABLED === 'true' && nodeEnv !== 'production',
     corsOrigins: list(env.CORS_ORIGINS),
+    placeProviders: {
+      osmOverpassUrl: env.OSM_OVERPASS_URL || 'https://overpass-api.de/api/interpreter',
+      osmNominatimUrl: env.OSM_NOMINATIM_URL || 'https://nominatim.openstreetmap.org',
+      osmUserAgent: env.OSM_USER_AGENT || 'StudySpaceG1/1.0 (+https://studyspace.local)',
+      wikidataApiUrl: env.WIKIDATA_API_URL || 'https://www.wikidata.org/w/api.php',
+      googlePlacesApiKey: env.GOOGLE_PLACES_API_KEY || undefined,
+      candidateTokenTtlSeconds: int(env.PLACE_CANDIDATE_TOKEN_TTL_SECONDS, 900),
+      providerTimeoutMs: int(env.PLACE_PROVIDER_TIMEOUT_MS, 8000),
+    },
   };
 }
