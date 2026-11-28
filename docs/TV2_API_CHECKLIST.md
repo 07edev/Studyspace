@@ -25,34 +25,34 @@ Trạng thái: `TODO` = chưa làm; `BE CODE` = đã viết BE + typecheck/build
 | DONE | `GET /places/map` | `PUBLIC` | `none → Page<PlaceMapFeature>` | `200` | `USR-08,U12` |
 | DONE | `GET /places/facets` | `PUBLIC` | `none → PlaceFacets` | `200` | `USR-08,U10` |
 | DONE | `GET /places/{placeId}` | `PUBLIC` | `none → Place` | `200` | `U12,U13,U15,U24` |
-| BE CODE | `GET /places/{placeId}/reviews` | `PUBLIC` | `none → Page<Review>` | `200` | `U15` |
+| DONE | `GET /places/{placeId}/reviews` | `PUBLIC` | `none → Page<Review>` | `200` | `U15` |
 | DONE | `GET /places/{placeId}/similar` | `PUBLIC` | `none → Page<Place>` | `200` | `U13` |
 
 ## Favorites (3 endpoint)
 
 | Trạng thái | Method và path | Scope | Request → Data DTO | HTTP | UI |
 | --- | --- | --- | --- | --- | --- |
-| BE CODE | `GET /users/me/favorites/places` | `USER` | `none → Page<Place>` | `200` | `USR-35,U18` |
-| BE CODE | `PUT /users/me/favorites/places/{placeId}` | `USER` | `none → BooleanResult` | `200` | `U13` |
-| BE CODE | `DELETE /users/me/favorites/places/{placeId}` | `USER` | `none → none` | `204` | `U13,U18` |
+| DONE | `GET /users/me/favorites/places` | `USER` | `none → Page<Place>` | `200` | `USR-35,U18` |
+| DONE | `PUT /users/me/favorites/places/{placeId}` | `USER` | `none → BooleanResult` | `200` | `U13` |
+| DONE | `DELETE /users/me/favorites/places/{placeId}` | `USER` | `none → none` | `204` | `U13,U18` |
 
 ## Reviews (4 endpoint)
 
 | Trạng thái | Method và path | Scope | Request → Data DTO | HTTP | UI |
 | --- | --- | --- | --- | --- | --- |
-| BE CODE | `POST /places/{placeId}/reviews` | `USER` | `ReviewWrite → Review` | `201` | `U16` |
-| BE CODE | `PATCH /reviews/{reviewId}` | `OWNER` | `ReviewWrite → Review` | `200` | `U16` |
-| BE CODE | `DELETE /reviews/{reviewId}` | `OWNER` | `none → none` | `204` | `U17` |
-| BE CODE | `GET /users/me/reviews` | `USER` | `none → Page<Review>` | `200` | `—` |
+| DONE | `POST /places/{placeId}/reviews` | `USER` | `ReviewWrite → Review` | `201` | `U16` |
+| DONE | `PATCH /reviews/{reviewId}` | `OWNER` | `ReviewWrite → Review` | `200` | `U16` |
+| DONE | `DELETE /reviews/{reviewId}` | `OWNER` | `none → none` | `204` | `U17` |
+| DONE | `GET /users/me/reviews` | `USER` | `none → Page<Review>` | `200` | `U15` |
 
 ## PlaceSuggestions (4 endpoint)
 
 | Trạng thái | Method và path | Scope | Request → Data DTO | HTTP | UI |
 | --- | --- | --- | --- | --- | --- |
-| BE CODE | `POST /place-suggestions/duplicate-check` | `USER` | `DuplicateCheck → DuplicateResult` | `200` | `U20,U22` |
-| BE CODE | `POST /place-suggestions` | `USER` | `SuggestionCreate → Suggestion` | `201` | `U20,U22,U23,U25` |
-| BE CODE | `GET /users/me/place-suggestions` | `USER` | `none → Page<Suggestion>` | `200` | `U26,U27` |
-| BE CODE | `GET /users/me/place-suggestions/{suggestionId}` | `OWNER` | `none → Suggestion` | `200` | `U27` |
+| DONE | `POST /place-suggestions/duplicate-check` | `USER` | `DuplicateCheck → DuplicateResult` | `200` | `U20,U22` |
+| DONE | `POST /place-suggestions` | `USER` | `SuggestionCreate → Suggestion` | `201` | `U20,U22,U23,U25` |
+| DONE | `GET /users/me/place-suggestions` | `USER` | `none → Page<Suggestion>` | `200` | `U26,U27` |
+| DONE | `GET /users/me/place-suggestions/{suggestionId}` | `OWNER` | `none → Suggestion` | `200` | `U27` |
 
 ## AdminPlaces (12 endpoint)
 

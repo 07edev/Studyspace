@@ -11,6 +11,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LockKeyhole, X } from 'lucide-react-native';
 import { AuthModal, authTitles } from '../features/auth/AuthModal';
+import { FavoritesModal } from '../features/favorites/FavoritesModal';
+import {
+  CreateSuggestionModal,
+  MySuggestionsModal,
+  SuggestionDetailModal,
+  UpdateSuggestionModal,
+} from '../features/place-suggestions/SuggestionModals';
 import {
   MapPlaceQuickModal,
   PhotoGalleryModal,
@@ -29,6 +36,7 @@ import { ContactVerifyForm } from '../features/profile/ContactVerifyForm';
 import { NotificationSettingsForm } from '../features/profile/NotificationSettingsForm';
 import { PrivacyForm } from '../features/profile/PrivacyForm';
 import { ProfileEditForm } from '../features/profile/ProfileEditForm';
+import { PlaceReviewsModal, ReviewFormModal } from '../features/reviews/ReviewModals';
 import { useSession } from '../shared/auth/AuthProvider';
 import { features } from '../features/pending/features';
 import { PendingFeature } from '../features/pending/PendingFeatureScreen';
@@ -49,6 +57,9 @@ function presentation(
     case 'auth-required':
       return { title: 'Đăng nhập để tiếp tục', size: 'C' };
     case 'feature':
+      if (route.feature === 'favorites' || route.feature === 'suggestions') {
+        return { title: features[route.feature].title, size: 'F', scrollable: false };
+      }
       return { title: features[route.feature].title, size: 'L' };
     case 'settings':
       return { title: 'Cài đặt', size: signedIn ? 'F' : 'L' };
@@ -88,7 +99,11 @@ function presentation(
     case 'photo-gallery':
       return { title: 'Hình ảnh địa điểm', size: 'F' };
     case 'place-reviews':
-      return { title: route.placeName ? `Đánh giá · ${route.placeName}` : 'Đánh giá địa điểm', size: 'F' };
+      return {
+        title: route.placeName ? `Đánh giá · ${route.placeName}` : 'Đánh giá địa điểm',
+        size: 'F',
+        scrollable: false,
+      };
     case 'review-form':
       return { title: route.existing ? 'Chỉnh sửa đánh giá' : 'Viết đánh giá', size: 'F' };
     case 'suggestion-create':
@@ -160,6 +175,12 @@ function ModalContent({
         </View>
       );
     case 'feature':
+      if (route.feature === 'favorites') {
+        return <FavoritesModal />;
+      }
+      if (route.feature === 'suggestions') {
+        return <MySuggestionsModal />;
+      }
       return <PendingFeature feature={route.feature} />;
     case 'settings':
       if (session.status === 'authenticated') {
@@ -259,11 +280,21 @@ function ModalContent({
         />
       );
     case 'place-reviews':
+      return <PlaceReviewsModal placeId={route.placeId} placeName={route.placeName} />;
     case 'review-form':
+      return (
+        <ReviewFormModal
+          placeId={route.placeId}
+          placeName={route.placeName}
+          existing={route.existing}
+        />
+      );
     case 'suggestion-create':
+      return <CreateSuggestionModal />;
     case 'suggestion-update':
+      return <UpdateSuggestionModal place={route.place} />;
     case 'suggestion-detail':
-      return <PendingFeature feature="places" />;
+      return <SuggestionDetailModal suggestionId={route.suggestionId} />;
   }
 }
 
