@@ -58,15 +58,15 @@ Trạng thái: `TODO` = chưa làm; `BE CODE` = đã viết BE + typecheck/build
 
 | Trạng thái | Method và path | Scope | Request → Data DTO | HTTP | UI |
 | --- | --- | --- | --- | --- | --- |
-| TODO | `GET /admin/places` | `ADMIN:PLACES.READ` | `none → Page<Place>` | `200` | `ADM-06,ADM-10,A16,A26,A31` |
-| TODO | `GET /admin/places/{placeId}` | `ADMIN:PLACES.READ` | `none → Place` | `200` | `ADM-10,A16,A26,A31` |
+| BE CODE | `GET /admin/places` | `ADMIN:PLACES.READ` | `none → Page<Place>` | `200` | `ADM-06,ADM-10,A16,A26,A31` |
+| BE CODE | `GET /admin/places/{placeId}` | `ADMIN:PLACES.READ` | `none → Place` | `200` | `ADM-10,A16,A26,A31` |
 | TODO | `GET /admin/place-candidates/search` | `ADMIN:PLACES.CREATE` | `none → Page<PlaceCandidate>` | `200` | `ADM-08` |
 | TODO | `POST /admin/places/duplicate-check` | `ADMIN:PLACES.CREATE` | `DuplicateCheck → DuplicateResult` | `200` | `ADM-08,A15` |
-| TODO | `POST /admin/places` | `ADMIN:PLACES.CREATE` | `PlaceUpsert → Place` | `201` | `ADM-06,ADM-08,ADM-09,A15,A22` |
-| TODO | `PATCH /admin/places/{placeId}` | `ADMIN:PLACES.UPDATE` | `PlacePatch → Place` | `200` | `ADM-06,ADM-09,ADM-10,A13,A14,A22,A24,A25` |
-| TODO | `PATCH /admin/places/{placeId}/status` | `ADMIN:PLACES.UPDATE` | `PlaceStatusPatch → Place` | `200` | `ADM-06,A13,A14` |
-| TODO | `GET /admin/places/{placeId}/history` | `ADMIN:PLACES.READ` | `none → Page<PlaceHistory>` | `200` | `ADM-10,A26` |
-| TODO | `PATCH /admin/places/{placeId}/fields/state` | `ADMIN:PLACES.UPDATE` | `FieldDecision → Place` | `200` | `ADM-10,A24,A25` |
+| BE CODE | `POST /admin/places` | `ADMIN:PLACES.CREATE` | `PlaceUpsert → Place` | `201` | `ADM-06,ADM-08,ADM-09,A15,A22` |
+| BE CODE | `PATCH /admin/places/{placeId}` | `ADMIN:PLACES.UPDATE` | `PlacePatch → Place` | `200` | `ADM-06,ADM-09,ADM-10,A13,A14,A22,A24,A25` |
+| BE CODE | `PATCH /admin/places/{placeId}/status` | `ADMIN:PLACES.UPDATE` | `PlaceStatusPatch → Place` | `200` | `ADM-06,A13,A14` |
+| BE CODE | `GET /admin/places/{placeId}/history` | `ADMIN:PLACES.READ` | `none → Page<PlaceHistory>` | `200` | `ADM-10,A26` |
+| BE CODE | `PATCH /admin/places/{placeId}/fields/state` | `ADMIN:PLACES.UPDATE` | `FieldDecision → Place` | `200` | `ADM-10,A24,A25` |
 | BE CODE | `GET /admin/place-attributes` | `ADMIN:PLACES.READ` | `none → Page<AttributeDefinition>` | `200` | `ADM-09,A20` |
 | BE CODE | `POST /admin/place-attributes` | `ADMIN:PLACES.UPDATE` | `AttributeDefinitionWrite → AttributeDefinition` | `201` | `A20` |
 | BE CODE | `PATCH /admin/place-attributes/{attributeId}` | `ADMIN:PLACES.UPDATE` | `AttributeDefinitionWrite → AttributeDefinition` | `200` | `A20` |

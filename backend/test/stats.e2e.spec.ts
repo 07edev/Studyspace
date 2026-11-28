@@ -2,6 +2,7 @@ import request from 'supertest';
 import mongoose from 'mongoose';
 import { AccountStatus, Role } from '../src/common/enums';
 import { StatsRegistry } from '../src/modules/stats/stats.registry';
+import { PlacesStatsContributor } from '../src/modules/places/places-stats.contributor';
 import { startEnv, type TestEnv } from './helpers';
 
 let env: TestEnv;
@@ -21,7 +22,10 @@ async function userAt(iso: string, extra: { status?: AccountStatus; role?: Role 
 }
 
 beforeAll(async () => {
-  env = await startEnv();
+  // Isolate StatsRegistry contract tests from real domain contributors (tested in admin-places.e2e.spec.ts).
+  env = await startEnv({
+    overrides: [{ provide: PlacesStatsContributor, useValue: { onModuleInit: () => undefined } }],
+  });
   reader = await env.createUser({ role: Role.ADMIN, permissions: [{ module: 'STATISTICS', actions: ['READ'] }] });
 });
 afterAll(() => env.close());
