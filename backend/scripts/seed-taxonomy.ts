@@ -8,6 +8,11 @@ import '../src/load-env';
 import mongoose, { type Model } from 'mongoose';
 import { loadConfig } from '../src/config/configuration';
 import {
+  PlaceAttributeDefinitionEntity,
+  PlaceAttributeDefinitionSchema,
+} from '../src/modules/places/schemas/place-attribute-definition.schema';
+import { DEFAULT_ATTRIBUTE_DEFINITIONS } from '../src/modules/places/place-attributes.service';
+import {
   TaxonomyItemEntity,
   TaxonomyItemSchema,
 } from '../src/modules/taxonomy/schemas/taxonomy-item.schema';
@@ -23,7 +28,33 @@ async function main() {
     ) as unknown as Model<TaxonomyItemEntity>;
     const service = new TaxonomyService(model);
     const { upserted } = await service.seedEntries();
-    console.log(`Seeded ${upserted} taxonomy & location entries.`);
+
+    const attrModel = mongoose.model(
+      PlaceAttributeDefinitionEntity.name,
+      PlaceAttributeDefinitionSchema,
+    );
+    let attrs = 0;
+    for (const item of DEFAULT_ATTRIBUTE_DEFINITIONS) {
+      await attrModel.findOneAndUpdate(
+        { key: item.key, category: item.category ?? null },
+        {
+          $set: {
+            label: item.label,
+            type: item.type,
+            options: item.options,
+            unit: item.unit,
+            required: item.required,
+            filterable: item.filterable,
+            active: item.active,
+            ...(item.category ? { category: item.category } : {}),
+          },
+          $setOnInsert: { key: item.key },
+        },
+        { upsert: true },
+      );
+      attrs += 1;
+    }
+    console.log(`Seeded ${upserted} taxonomy/location entries and ${attrs} place attributes.`);
   } finally {
     await mongoose.disconnect();
   }
