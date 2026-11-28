@@ -1,20 +1,21 @@
 import { Module } from '@nestjs/common';
+import { TaxonomyModule } from '../taxonomy/taxonomy.module';
+import { Tv2TaxonomyRef } from '../taxonomy/tv2-taxonomy-ref.service';
 import {
   FileReadyRef,
   NotConnectedFileReadyRef,
-  NotConnectedTaxonomyRef,
   TaxonomyRef,
 } from './ports';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
 @Module({
+  imports: [TaxonomyModule],
   controllers: [UsersController],
   providers: [
     UsersService,
-    // TV2/TV3: when your module is ready, change `useClass` to your real implementation
-    // (see ports.ts for the exact contract). Until then requests that need them get 503.
-    { provide: TaxonomyRef, useClass: NotConnectedTaxonomyRef },
+    // TV2 taxonomy connected; TV3 FileReadyRef stays 503 until TV3 merges.
+    { provide: TaxonomyRef, useExisting: Tv2TaxonomyRef },
     { provide: FileReadyRef, useClass: NotConnectedFileReadyRef },
   ],
   exports: [UsersService],

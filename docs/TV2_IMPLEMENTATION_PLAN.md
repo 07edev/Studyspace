@@ -16,8 +16,8 @@ Ngày lập: 28/11/2026. Chủ sở hữu: TV2 (Places, Explore, Taxonomy, Revie
 | Milestone | Lớp | Nhánh Git | Task báo cáo | Trạng thái |
 | --- | --- | --- | --- | --- |
 | M0 | `be` | `phuc/feature/be/setup-contracts-config` | Khởi tạo | DONE |
-| M1 | `be` | `phuc/feature/be/taxonomy-locations` | P01 (BE) | DOING |
-| M2 | `be` | `phuc/feature/be/places-public-attributes` | P05 + P02 (BE) | TODO |
+| M1 | `be` | `phuc/feature/be/taxonomy-locations` | P01 (BE) | DONE (e2e chờ DB) |
+| M2 | `be` | `phuc/feature/be/places-public-attributes` | P05 + P02 (BE) | DOING |
 | M3 | `be` | `phuc/feature/be/admin-places` | P03 (BE) | TODO |
 | M4 | `be` | `phuc/feature/be/place-providers` | P04 (BE) | TODO |
 | M5 | `be` | `phuc/feature/be/favorites-reviews` | P06 + P07 (BE) | TODO |
@@ -32,3 +32,4 @@ Ngày lập: 28/11/2026. Chủ sở hữu: TV2 (Places, Explore, Taxonomy, Revie
 | Ngày | Milestone | Việc đã làm | Bằng chứng kiểm tra / Giới hạn |
 | --- | --- | --- | --- |
 | 28/11/2026 | M0 | Tạo tài liệu theo dõi TV2, shared contract `src/shared/contracts/places.ts`, cấu hình `placeProviders` trong `backend/src/config/configuration.ts` & `.env.example` | `backend` typecheck + build đạt; `web-admin` typecheck + build đạt; App `lint` + `typecheck` đạt. Lưu ý: máy dev hiện chưa bật MongoDB local (`127.0.0.1:27017`) / Docker daemon |
+| 28/11/2026 | M1 | Triển khai `TaxonomyModule` (7 API công khai), `seed:taxonomy` idempotent dữ liệu VN, nối `Tv2TaxonomyRef` vào `UsersModule`, cập nhật `users.e2e.spec.ts`, thêm `taxonomy.unit.spec.ts` & `taxonomy.e2e.spec.ts` | `backend` typecheck + build + `taxonomy.unit.spec.ts` (6/6) đạt; e2e chờ MongoDB local |

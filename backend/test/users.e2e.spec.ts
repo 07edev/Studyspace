@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { ApiException } from '../src/common/api-error';
 import { AccountStatus } from '../src/common/enums';
 import { UserDevice } from '../src/modules/identity/schemas/user-device.schema';
-import { FileReadyRef, TaxonomyRef } from '../src/modules/users/ports';
+import { FileReadyRef, NotConnectedTaxonomyRef, TaxonomyRef } from '../src/modules/users/ports';
 import { startEnv, type TestEnv } from './helpers';
 
 let env: TestEnv;
@@ -194,7 +194,9 @@ describe('PATCH /users/me/profile', () => {
 describe('before TV2/TV3 are connected', () => {
   let bare: TestEnv;
   beforeAll(async () => {
-    bare = await startEnv();
+    bare = await startEnv({
+      overrides: [{ provide: TaxonomyRef, useValue: new NotConnectedTaxonomyRef() }],
+    });
   });
   afterAll(async () => {
     await bare.close();

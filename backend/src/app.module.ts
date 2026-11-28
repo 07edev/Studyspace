@@ -16,6 +16,7 @@ import { JwtAuthGuard } from './modules/identity/guards/jwt-auth.guard';
 import { PermissionsGuard } from './modules/identity/guards/permissions.guard';
 import { IdentityModule } from './modules/identity/identity.module';
 import { OutboxModule } from './modules/outbox/outbox.module';
+import { TaxonomyModule } from './modules/taxonomy/taxonomy.module';
 
 @Module({})
 export class AppModule {
@@ -43,7 +44,9 @@ export class AppModule {
         AdminUsersModule,
         AdminAdminsModule,
         StatsModule,
-        // TV2/TV3 register their feature modules here.
+        // TV2 feature modules
+        TaxonomyModule,
+        // TV3 register their feature modules here.
       ],
       controllers: [HealthController],
       providers: [

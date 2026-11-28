@@ -7,13 +7,13 @@ Trạng thái: `TODO` = chưa làm; `BE CODE` = đã viết BE + typecheck/build
 
 | Trạng thái | Method và path | Scope | Request → Data DTO | HTTP | UI |
 | --- | --- | --- | --- | --- | --- |
-| TODO | `GET /taxonomies/place-categories` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `USR-07` |
-| TODO | `GET /taxonomies/amenities` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `—` |
-| TODO | `GET /taxonomies/universities` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `U07` |
-| TODO | `GET /taxonomies/majors` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `U07,U37` |
-| TODO | `GET /taxonomies/subjects` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `USR-23,U08,U37` |
-| TODO | `GET /locations/provinces` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `A18,U09,U21` |
-| TODO | `GET /locations/wards` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `A18,U09,U21` |
+| BE CODE | `GET /taxonomies/place-categories` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `USR-07` |
+| BE CODE | `GET /taxonomies/amenities` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `—` |
+| BE CODE | `GET /taxonomies/universities` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `U07` |
+| BE CODE | `GET /taxonomies/majors` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `U07,U37` |
+| BE CODE | `GET /taxonomies/subjects` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `USR-23,U08,U37` |
+| BE CODE | `GET /locations/provinces` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `A18,U09,U21` |
+| BE CODE | `GET /locations/wards` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `A18,U09,U21` |
 | TODO | `GET /places/attribute-definitions` | `PUBLIC` | `none → Page<AttributeDefinition>` | `200` | `U10,U24` |
 
 ## PlacesPublic (7 endpoint)
