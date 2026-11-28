@@ -21,8 +21,8 @@ Ngày lập: 28/11/2026. Chủ sở hữu: TV2 (Places, Explore, Taxonomy, Revie
 | M3 | `be` | `phuc/feature/be/admin-places` | P03 (BE) | DONE (e2e chờ DB) |
 | M4 | `be` | `phuc/feature/be/place-providers` | P04 (BE) | DONE (e2e chờ DB) |
 | M5 | `be` | `phuc/feature/be/favorites-reviews` | P06 + P07 (BE) | DONE (e2e chờ DB) |
-| M6 | `be` | `phuc/feature/be/place-suggestions` | P08 + P09 (BE) | DOING |
-| M7 | `web-admin` | `phuc/feature/web-admin/places-management` | P03 + P04 + P05 (Web) | TODO |
+| M6 | `be` | `phuc/feature/be/place-suggestions` | P08 + P09 (BE) | DONE (e2e chờ DB) |
+| M7 | `web-admin` | `phuc/feature/web-admin/places-management` | P03 + P04 + P05 (Web) | DOING |
 | M8 | `web-admin` | `phuc/feature/web-admin/suggestions-reviews` | P07 + P09 (Web) | TODO |
 | M9 | `app` | `phuc/feature/app/taxonomy-explore-places` | P01 + P02 + P10 (App) | TODO |
 | M10 | `app` | `phuc/feature/app/favorites-reviews-suggestions` | P06 + P07 + P08 + P10 (App) | TODO |
@@ -37,3 +37,4 @@ Ngày lập: 28/11/2026. Chủ sở hữu: TV2 (Places, Explore, Taxonomy, Revie
 | 28/11/2026 | M3 | Triển khai 7 API `AdminPlaces` (CRUD, CAS `version`, khóa/xác minh `fieldStates`, soft delete, `place_history`, `AuditService`, `moderateFromReport`), cổng `PlaceFileRef`, `PlacesStatsContributor` đăng ký `StatsRegistry`, cô lập `stats.e2e.spec.ts` | `backend` typecheck + build + unit tests (`admin-places.unit.spec.ts` + toàn bộ unit tests trước đó) đạt; e2e chờ MongoDB local |
 | 28/11/2026 | M4 | Triển khai `PlaceProvidersService` (OSM Nominatim + Wikidata + Google Places optional), `CandidateTokenService` (HMAC + TTL), `DuplicateCheckService` (bán kính + tên chuẩn hóa), 2 API `place-candidates/search` & `duplicate-check`, nối vào `AdminPlacesService.create` | `backend` typecheck + build + unit tests (`place-providers.unit.spec.ts` + toàn bộ unit tests trước đó) đạt; e2e chờ MongoDB local |
 | 28/11/2026 | M5 | Nâng cấp `UserContentRegistry` tương thích ngược TV1/TV3, triển khai `FavoritesModule` (3 API + `isFavorite`), `ReviewsModule` (8 API, unique partial index, tính lại `ratingAverage`/`ratingCount`, moderation + `AuditService`, `moderateFromReport`) | `backend` typecheck + build + unit tests (`favorites-reviews.unit.spec.ts` + toàn bộ unit tests trước đó) đạt; e2e chờ MongoDB local |
+| 28/11/2026 | M6 | Triển khai `PlaceSuggestionsModule` (7 API user/admin, allow-list `fieldPath`, kiểm `fieldStates.locked`, CAS `expectedVersion`, `@Idempotent()`, `runInOptionalTransaction`, `place_history`, `AuditService`, `OutboxService` `SUGGESTION_DECIDED`, `pendingSuggestions` Stats, `UserContentRegistry`). Chốt đủ 44/44 API Backend TV2 | `backend` typecheck + build + 6/6 bộ unit tests đạt; e2e chờ MongoDB local |

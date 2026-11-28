@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { RequirePermission } from '../../common/decorators/auth.decorators';
@@ -26,6 +26,7 @@ export class AdminPlaceProvidersController {
   }
 
   @RequirePermission('PLACES', 'CREATE')
+  @HttpCode(200)
   @Post('places/duplicate-check')
   checkDuplicate(@Body() dto: DuplicateCheckDto) {
     return this.duplicateCheck.check(dto);

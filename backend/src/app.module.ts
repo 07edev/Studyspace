@@ -17,6 +17,7 @@ import { PermissionsGuard } from './modules/identity/guards/permissions.guard';
 import { FavoritesModule } from './modules/favorites/favorites.module';
 import { IdentityModule } from './modules/identity/identity.module';
 import { OutboxModule } from './modules/outbox/outbox.module';
+import { PlaceSuggestionsModule } from './modules/place-suggestions/place-suggestions.module';
 import { PlacesModule } from './modules/places/places.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { TaxonomyModule } from './modules/taxonomy/taxonomy.module';
@@ -52,6 +53,7 @@ export class AppModule {
         PlacesModule,
         FavoritesModule,
         ReviewsModule,
+        PlaceSuggestionsModule,
         // TV3 register their feature modules here.
       ],
       controllers: [HealthController],

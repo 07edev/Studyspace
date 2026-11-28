@@ -49,10 +49,10 @@ Trạng thái: `TODO` = chưa làm; `BE CODE` = đã viết BE + typecheck/build
 
 | Trạng thái | Method và path | Scope | Request → Data DTO | HTTP | UI |
 | --- | --- | --- | --- | --- | --- |
-| TODO | `POST /place-suggestions/duplicate-check` | `USER` | `DuplicateCheck → DuplicateResult` | `200` | `U20,U22` |
-| TODO | `POST /place-suggestions` | `USER` | `SuggestionCreate → Suggestion` | `201` | `U20,U22,U23,U25` |
-| TODO | `GET /users/me/place-suggestions` | `USER` | `none → Page<Suggestion>` | `200` | `U26,U27` |
-| TODO | `GET /users/me/place-suggestions/{suggestionId}` | `OWNER` | `none → Suggestion` | `200` | `U27` |
+| BE CODE | `POST /place-suggestions/duplicate-check` | `USER` | `DuplicateCheck → DuplicateResult` | `200` | `U20,U22` |
+| BE CODE | `POST /place-suggestions` | `USER` | `SuggestionCreate → Suggestion` | `201` | `U20,U22,U23,U25` |
+| BE CODE | `GET /users/me/place-suggestions` | `USER` | `none → Page<Suggestion>` | `200` | `U26,U27` |
+| BE CODE | `GET /users/me/place-suggestions/{suggestionId}` | `OWNER` | `none → Suggestion` | `200` | `U27` |
 
 ## AdminPlaces (12 endpoint)
 
@@ -75,9 +75,9 @@ Trạng thái: `TODO` = chưa làm; `BE CODE` = đã viết BE + typecheck/build
 
 | Trạng thái | Method và path | Scope | Request → Data DTO | HTTP | UI |
 | --- | --- | --- | --- | --- | --- |
-| TODO | `GET /admin/place-suggestions` | `ADMIN:SUGGESTIONS.READ` | `none → Page<Suggestion>` | `200` | `ADM-13,ADM-14,A28,A31` |
-| TODO | `GET /admin/place-suggestions/{suggestionId}` | `ADMIN:SUGGESTIONS.READ` | `none → Suggestion` | `200` | `ADM-13,ADM-14,A28,A31` |
-| TODO | `POST /admin/place-suggestions/{suggestionId}/decision` | `ADMIN:SUGGESTIONS.MODERATE` | `ModerationDecision → Suggestion` | `200` | `ADM-14,A29,A30` |
+| BE CODE | `GET /admin/place-suggestions` | `ADMIN:SUGGESTIONS.READ` | `none → Page<Suggestion>` | `200` | `ADM-13,ADM-14,A28,A31` |
+| BE CODE | `GET /admin/place-suggestions/{suggestionId}` | `ADMIN:SUGGESTIONS.READ` | `none → Suggestion` | `200` | `ADM-13,ADM-14,A28,A31` |
+| BE CODE | `POST /admin/place-suggestions/{suggestionId}/decision` | `ADMIN:SUGGESTIONS.MODERATE` | `ModerationDecision → Suggestion` | `200` | `ADM-14,A29,A30` |
 
 ## AdminReviews (3 endpoint)
 
