@@ -11,6 +11,18 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LockKeyhole, X } from 'lucide-react-native';
 import { AuthModal, authTitles } from '../features/auth/AuthModal';
+import {
+  MapPlaceQuickModal,
+  PhotoGalleryModal,
+  PlaceDetailModal,
+  PlaceFilterModal,
+  PlaceSortModal,
+} from '../features/places/PlaceModals';
+import {
+  LocationPickerModal,
+  SubjectsPickerModal,
+  UniversityMajorPickerModal,
+} from '../features/places/TaxonomyPickers';
 import { DeleteAccountForm, LogoutConfirm, SettingsPanel } from '../features/profile/AccountSettings';
 import { ChangePasswordForm } from '../features/profile/ChangePasswordForm';
 import { ContactVerifyForm } from '../features/profile/ContactVerifyForm';
@@ -28,7 +40,7 @@ import type { ModalRoute, ModalSize } from './types';
 function presentation(
   route: ModalRoute,
   signedIn: boolean,
-): { title: string; size: ModalSize } {
+): { title: string; size: ModalSize; scrollable?: boolean } {
   switch (route.name) {
     case 'auth':
       return { title: authTitles[route.mode], size: 'F' };
@@ -59,6 +71,32 @@ function presentation(
       return { title: 'Xóa tài khoản', size: 'L' };
     case 'about':
       return { title: 'Về StudySpace', size: 'L' };
+    case 'university-picker':
+      return { title: 'Chọn trường & ngành học', size: 'F', scrollable: false };
+    case 'subjects-picker':
+      return { title: 'Chọn môn học quan tâm', size: 'F', scrollable: false };
+    case 'location-picker':
+      return { title: 'Chọn khu vực', size: 'F', scrollable: false };
+    case 'place-filter':
+      return { title: 'Lọc địa điểm', size: 'L' };
+    case 'place-sort':
+      return { title: 'Sắp xếp kết quả', size: 'C' };
+    case 'map-place-quick':
+      return { title: 'Thông tin nhanh', size: 'C' };
+    case 'place-detail':
+      return { title: 'Chi tiết địa điểm', size: 'F' };
+    case 'photo-gallery':
+      return { title: 'Hình ảnh địa điểm', size: 'F' };
+    case 'place-reviews':
+      return { title: route.placeName ? `Đánh giá · ${route.placeName}` : 'Đánh giá địa điểm', size: 'F' };
+    case 'review-form':
+      return { title: route.existing ? 'Chỉnh sửa đánh giá' : 'Viết đánh giá', size: 'F' };
+    case 'suggestion-create':
+      return { title: 'Đề xuất địa điểm mới', size: 'F' };
+    case 'suggestion-update':
+      return { title: 'Gợi ý chỉnh sửa địa điểm', size: 'F' };
+    case 'suggestion-detail':
+      return { title: 'Chi tiết đề xuất', size: 'L' };
   }
 }
 
@@ -198,6 +236,34 @@ function ModalContent({
           <Button title="Tiếp tục khám phá" onPress={close} />
         </View>
       );
+    case 'university-picker':
+      return <UniversityMajorPickerModal returnToProfile={route.returnToProfile} />;
+    case 'subjects-picker':
+      return <SubjectsPickerModal returnToProfile={route.returnToProfile} />;
+    case 'location-picker':
+      return <LocationPickerModal />;
+    case 'place-filter':
+      return <PlaceFilterModal />;
+    case 'place-sort':
+      return <PlaceSortModal />;
+    case 'map-place-quick':
+      return <MapPlaceQuickModal placeId={route.placeId} />;
+    case 'place-detail':
+      return <PlaceDetailModal placeId={route.placeId} />;
+    case 'photo-gallery':
+      return (
+        <PhotoGalleryModal
+          placeId={route.placeId}
+          images={route.images}
+          initialIndex={route.initialIndex}
+        />
+      );
+    case 'place-reviews':
+    case 'review-form':
+    case 'suggestion-create':
+    case 'suggestion-update':
+    case 'suggestion-detail':
+      return <PendingFeature feature="places" />;
   }
 }
 
@@ -230,7 +296,7 @@ export function ModalHost({
     ) : null;
   }
   const covered = !!state.pending || !!request;
-  const { title, size } = presentation(state.active, session.status === 'authenticated');
+  const { title, size, scrollable = true } = presentation(state.active, session.status === 'authenticated');
   return (
     <Modal
       visible
@@ -268,7 +334,11 @@ export function ModalHost({
           <View
             accessibilityElementsHidden={covered}
             importantForAccessibility={covered ? 'no-hide-descendants' : 'auto'}
-            style={[styles.body, covered && styles.hidden]}
+            style={[
+              styles.body,
+              size === 'F' && !scrollable && styles.bodyFlex,
+              covered && styles.hidden,
+            ]}
           >
             <View style={styles.header}>
               <AppText variant="heading" style={styles.grow}>
@@ -284,17 +354,28 @@ export function ModalHost({
                 <X size={23} color={colors.ink} />
               </Pressable>
             </View>
-            <ScrollView
-              keyboardShouldPersistTaps="handled"
-              contentContainerStyle={styles.scroll}
-            >
-              <ModalContent
-                key={state.revision}
-                route={state.active}
-                onGuest={onWelcome}
-                onContinue={onContinue}
-              />
-            </ScrollView>
+            {scrollable ? (
+              <ScrollView
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={styles.scroll}
+              >
+                <ModalContent
+                  key={state.revision}
+                  route={state.active}
+                  onGuest={onWelcome}
+                  onContinue={onContinue}
+                />
+              </ScrollView>
+            ) : (
+              <View style={styles.flexBody}>
+                <ModalContent
+                  key={state.revision}
+                  route={state.active}
+                  onGuest={onWelcome}
+                  onContinue={onContinue}
+                />
+              </View>
+            )}
           </View>
           {request && (
             <ConfirmDialog
@@ -342,6 +423,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 28,
   },
   body: { flexShrink: 1 },
+  bodyFlex: { flex: 1 },
+  flexBody: { flex: 1 },
   hidden: { display: 'none' },
   header: {
     flexDirection: 'row',

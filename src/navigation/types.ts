@@ -1,4 +1,5 @@
 import type { ContactChallenge } from '../shared/contracts/auth';
+import type { ImageRef, Place, Review } from '../shared/contracts/places';
 
 export type AppTabParamList = {
   Home: undefined;
@@ -38,5 +39,20 @@ export type ModalRoute =
   | { name: 'notifications' }
   | { name: 'logout-confirm' }
   | { name: 'delete-account' }
-  | { name: 'about' };
+  | { name: 'about' }
+  // TV2 (M9): Taxonomy pickers & Places Explore modals (U07-U14)
+  | { name: 'university-picker'; returnToProfile?: boolean }
+  | { name: 'subjects-picker'; returnToProfile?: boolean }
+  | { name: 'location-picker' }
+  | { name: 'place-filter' }
+  | { name: 'place-sort' }
+  | { name: 'map-place-quick'; placeId: string }
+  | { name: 'place-detail'; placeId: string }
+  | { name: 'photo-gallery'; placeId: string; images: ImageRef[]; initialIndex?: number }
+  // TV2 (M10): Reviews & Place Suggestions modals (U15-U16, U20, U23, U27)
+  | { name: 'place-reviews'; placeId: string; placeName?: string }
+  | { name: 'review-form'; placeId: string; placeName?: string; existing?: Review }
+  | { name: 'suggestion-create' }
+  | { name: 'suggestion-update'; place: Place }
+  | { name: 'suggestion-detail'; suggestionId: string };
 export type ModalSize = 'C' | 'L' | 'F';

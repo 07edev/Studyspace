@@ -47,6 +47,9 @@ const failure = (status: number, code: string, message: string, details: unknown
 type Call = { method: string; path: string; body: any };
 type Handler = (call: Call) => Response | Promise<Response>;
 
+const emptyPage = { items: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasNext: false } };
+const emptyHome = { categories: [], nearby: [], topRated: [], recentlyUpdated: [] };
+
 // A signed-in app (stored refresh token) whose fake server answers by "METHOD /path".
 function makeApp(routes: Record<string, Handler>, user: object = baseUser) {
   const calls: Call[] = [];
@@ -54,6 +57,8 @@ function makeApp(routes: Record<string, Handler>, user: object = baseUser) {
     'POST /auth/token/refresh': () => ok(fresh(2)),
     'GET /auth/me': () => ok(user),
     'GET /users/me': () => ok(user),
+    'GET /home': () => ok(emptyHome),
+    'GET /taxonomies/place-categories': () => ok(emptyPage),
     ...routes,
   };
   const fetcher = jest.fn(async (url: string, init: RequestInit) => {

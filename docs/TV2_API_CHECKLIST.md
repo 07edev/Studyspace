@@ -7,26 +7,26 @@ Trạng thái: `TODO` = chưa làm; `BE CODE` = đã viết BE + typecheck/build
 
 | Trạng thái | Method và path | Scope | Request → Data DTO | HTTP | UI |
 | --- | --- | --- | --- | --- | --- |
-| BE CODE | `GET /taxonomies/place-categories` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `USR-07` |
-| BE CODE | `GET /taxonomies/amenities` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `—` |
-| BE CODE | `GET /taxonomies/universities` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `U07` |
-| BE CODE | `GET /taxonomies/majors` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `U07,U37` |
-| BE CODE | `GET /taxonomies/subjects` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `USR-23,U08,U37` |
-| BE CODE | `GET /locations/provinces` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `A18,U09,U21` |
-| BE CODE | `GET /locations/wards` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `A18,U09,U21` |
-| BE CODE | `GET /places/attribute-definitions` | `PUBLIC` | `none → Page<AttributeDefinition>` | `200` | `U10,U24` |
+| DONE | `GET /taxonomies/place-categories` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `USR-07` |
+| DONE | `GET /taxonomies/amenities` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `ADM-09,U10` |
+| DONE | `GET /taxonomies/universities` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `U07` |
+| DONE | `GET /taxonomies/majors` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `U07,U37` |
+| DONE | `GET /taxonomies/subjects` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `USR-23,U08,U37` |
+| DONE | `GET /locations/provinces` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `A18,U09,U21` |
+| DONE | `GET /locations/wards` | `PUBLIC` | `none → Page<TaxonomyItem>` | `200` | `A18,U09,U21` |
+| DONE | `GET /places/attribute-definitions` | `PUBLIC` | `none → Page<AttributeDefinition>` | `200` | `U10,U24` |
 
 ## PlacesPublic (7 endpoint)
 
 | Trạng thái | Method và path | Scope | Request → Data DTO | HTTP | UI |
 | --- | --- | --- | --- | --- | --- |
-| BE CODE | `GET /home` | `PUBLIC` | `none → Homepage` | `200` | `USR-07` |
-| BE CODE | `GET /places` | `PUBLIC` | `none → Page<Place>` | `200` | `USR-07,USR-08,U10-U13,U15,U24` |
-| BE CODE | `GET /places/map` | `PUBLIC` | `none → Page<PlaceMapFeature>` | `200` | `USR-08,U12` |
-| BE CODE | `GET /places/facets` | `PUBLIC` | `none → PlaceFacets` | `200` | `USR-08,U10` |
-| BE CODE | `GET /places/{placeId}` | `PUBLIC` | `none → Place` | `200` | `U12,U13,U15,U24` |
+| DONE | `GET /home` | `PUBLIC` | `none → Homepage` | `200` | `USR-07` |
+| DONE | `GET /places` | `PUBLIC` | `none → Page<Place>` | `200` | `USR-07,USR-08,U10-U13,U15,U24` |
+| DONE | `GET /places/map` | `PUBLIC` | `none → Page<PlaceMapFeature>` | `200` | `USR-08,U12` |
+| DONE | `GET /places/facets` | `PUBLIC` | `none → PlaceFacets` | `200` | `USR-08,U10` |
+| DONE | `GET /places/{placeId}` | `PUBLIC` | `none → Place` | `200` | `U12,U13,U15,U24` |
 | BE CODE | `GET /places/{placeId}/reviews` | `PUBLIC` | `none → Page<Review>` | `200` | `U15` |
-| BE CODE | `GET /places/{placeId}/similar` | `PUBLIC` | `none → Page<Place>` | `200` | `—` |
+| DONE | `GET /places/{placeId}/similar` | `PUBLIC` | `none → Page<Place>` | `200` | `U13` |
 
 ## Favorites (3 endpoint)
 

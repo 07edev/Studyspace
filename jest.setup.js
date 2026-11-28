@@ -39,3 +39,13 @@ jest.mock('@react-native-google-signin/google-signin', () => ({
     SIGN_IN_REQUIRED: 'SIGN_IN_REQUIRED',
   },
 }));
+
+// WebView does not have a native browser engine under Jest; expose a View stand-in preserving onMessage.
+jest.mock('react-native-webview', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  const MockWebView = React.forwardRef((props, ref) =>
+    React.createElement(View, { ...props, ref, testID: props.testID ?? 'leaflet-webview' }),
+  );
+  return { __esModule: true, WebView: MockWebView, default: MockWebView };
+});

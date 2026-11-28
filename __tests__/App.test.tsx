@@ -45,16 +45,25 @@ const failure = (status: number, code: string, message: string, details: unknown
     headers: { get: () => null },
   } as unknown as Response);
 
+const emptyPage = { items: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasNext: false } };
+const emptyHome = { categories: [], nearby: [], topRated: [], recentlyUpdated: [] };
+
 type Handler = (body: any) => Response | Promise<Response>;
 function makeApp(routes: Record<string, Handler>, storedToken: string | null = null) {
   const calls: { path: string; body: any }[] = [];
+  const publicDefaults: Record<string, Handler> = {
+    '/home': () => ok(emptyHome),
+    '/taxonomies/place-categories': () => ok(emptyPage),
+  };
   const fetcher = jest.fn(async (url: string, init: RequestInit) => {
     const path = url.replace('https://api.test', '');
     const body = init.body ? JSON.parse(init.body as string) : undefined;
-    calls.push({ path, body });
-    const handler = routes[path];
+    const handler = routes[path] ?? publicDefaults[path];
     if (!handler) {
       throw new Error(`unexpected request ${path}`);
+    }
+    if (routes[path]) {
+      calls.push({ path, body });
     }
     return handler(body);
   });

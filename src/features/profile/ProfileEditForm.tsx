@@ -159,9 +159,25 @@ export function ProfileEditForm({ mode = 'edit' }: { mode?: 'edit' | 'complete' 
         error={error('bio')}
       />
       <Card style={styles.pending}>
-        <AppText variant="label">Ảnh đại diện, trường, ngành và môn quan tâm</AppText>
+        <AppText variant="label">Học tập & Quan tâm</AppText>
         <AppText variant="caption" muted>
-          Các mục này sẽ có khi dịch vụ tải ảnh và danh mục trường/ngành/môn học sẵn sàng.
+          {profile.universityId ? 'Đã chọn trường học' : 'Chưa chọn trường/ngành'} ·{' '}
+          {(profile.subjectIds?.length ?? 0)} môn học quan tâm
+        </AppText>
+        <View style={styles.taxonomyActions}>
+          <Button
+            variant="secondary"
+            title="Chọn trường & ngành"
+            onPress={() => open({ name: 'university-picker', returnToProfile: true })}
+          />
+          <Button
+            variant="secondary"
+            title="Chọn môn quan tâm"
+            onPress={() => open({ name: 'subjects-picker', returnToProfile: true })}
+          />
+        </View>
+        <AppText variant="caption" muted>
+          Ảnh đại diện sẽ mở khi dịch vụ tải ảnh (TV3) sẵn sàng.
         </AppText>
       </Card>
       {submit.message && (
@@ -216,7 +232,8 @@ export function ProfileEditForm({ mode = 'edit' }: { mode?: 'edit' | 'complete' 
 const styles = StyleSheet.create({
   form: { gap: 16 },
   bio: { minHeight: 110 },
-  pending: { backgroundColor: colors.primarySoft, gap: 6 },
+  pending: { backgroundColor: colors.primarySoft, gap: 8 },
+  taxonomyActions: { gap: 8 },
   section: { gap: 12, marginTop: 8 },
   error: { color: colors.error },
 });

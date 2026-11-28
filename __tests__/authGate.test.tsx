@@ -36,6 +36,9 @@ const authSession: AuthSession = {
 const ok = (data: unknown) =>
   ({ status: 200, ok: true, json: async () => ({ success: true, data, requestId: 'r' }), headers: { get: () => null } } as unknown as Response);
 
+const emptyPage = { items: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasNext: false } };
+const emptyHome = { categories: [], nearby: [], topRated: [], recentlyUpdated: [] };
+
 // A guest app (nothing stored) whose fake server answers by "METHOD /path".
 function makeSession(storedToken: string | null = null) {
   const calls: string[] = [];
@@ -43,6 +46,8 @@ function makeSession(storedToken: string | null = null) {
     'POST /auth/login': () => ok(authSession),
     'GET /auth/me': () => ok(user),
     'GET /users/me': () => ok(user),
+    'GET /home': () => ok(emptyHome),
+    'GET /taxonomies/place-categories': () => ok(emptyPage),
     'POST /auth/token/refresh': () => ok(authSession.tokens),
     'POST /auth/logout': () => ({ status: 204, ok: true, headers: { get: () => null } } as unknown as Response),
   };

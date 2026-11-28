@@ -9,11 +9,11 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react-native';
+import { ExploreScreen } from '../features/explore/ExploreScreen';
 import { HomeScreen } from '../features/home/HomeScreen';
 import {
   CommunityScreen,
   DocumentsScreen,
-  ExploreScreen,
 } from '../features/pending/PendingFeatureScreen';
 import { ProfileScreen } from '../features/profile/ProfileScreen';
 import { colors } from '../shared/theme/tokens';

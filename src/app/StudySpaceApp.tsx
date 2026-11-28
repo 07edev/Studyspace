@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ExploreProvider } from '../features/places/ExploreContext';
 import { WelcomeScreen } from '../features/welcome/WelcomeScreen';
 import { AppTabs } from '../navigation/AppTabs';
 import { ModalCoordinator, useModal } from '../navigation/ModalCoordinator';
@@ -34,13 +35,15 @@ export default function StudySpaceApp({ session }: { session?: SessionManager })
       <ToastProvider>
         <AuthProvider manager={session}>
           <QueryProvider>
-            <ConfirmProvider>
-              <ModalCoordinator>
-                <AuthGateProvider>
-                  <Shell />
-                </AuthGateProvider>
-              </ModalCoordinator>
-            </ConfirmProvider>
+            <ExploreProvider>
+              <ConfirmProvider>
+                <ModalCoordinator>
+                  <AuthGateProvider>
+                    <Shell />
+                  </AuthGateProvider>
+                </ModalCoordinator>
+              </ConfirmProvider>
+            </ExploreProvider>
           </QueryProvider>
         </AuthProvider>
       </ToastProvider>

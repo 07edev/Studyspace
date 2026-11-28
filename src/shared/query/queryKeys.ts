@@ -20,10 +20,39 @@ export const queryKeys = {
     publicProfile: (userId: string) => ['users', 'public-profile', userId] as const,
   },
   // TV2 and TV3: add your factories here (or export them from your feature) following the same shape.
+  taxonomy: {
+    all: ['taxonomy'] as const,
+    categories: () => ['taxonomy', 'categories'] as const,
+    amenities: () => ['taxonomy', 'amenities'] as const,
+    universities: (q = '') => ['taxonomy', 'universities', { q }] as const,
+    majors: (universityId?: string, q = '') => ['taxonomy', 'majors', { universityId, q }] as const,
+    subjects: (q = '') => ['taxonomy', 'subjects', { q }] as const,
+    provinces: () => ['taxonomy', 'provinces'] as const,
+    wards: (provinceCode: string) => ['taxonomy', 'wards', { provinceCode }] as const,
+  },
   places: {
     all: ['places'] as const,
+    home: (params: object = {}) => ['places', 'home', params] as const,
     list: (filters: object = {}) => ['places', 'list', filters] as const,
+    map: (filters: object = {}) => ['places', 'map', filters] as const,
+    facets: (category?: string) => ['places', 'facets', { category }] as const,
+    attributes: (category?: string) => ['places', 'attributes', { category }] as const,
     detail: (placeId: string) => ['places', 'detail', placeId] as const,
+    similar: (placeId: string) => ['places', 'similar', placeId] as const,
+    reviews: (placeId: string, sort = 'newest') => ['places', 'reviews', placeId, { sort }] as const,
+  },
+  favorites: {
+    all: ['favorites'] as const,
+    list: () => ['favorites', 'list'] as const,
+  },
+  reviews: {
+    all: ['reviews'] as const,
+    mine: () => ['reviews', 'mine'] as const,
+  },
+  suggestions: {
+    all: ['suggestions'] as const,
+    mine: () => ['suggestions', 'mine'] as const,
+    detail: (suggestionId: string) => ['suggestions', 'detail', suggestionId] as const,
   },
   posts: {
     all: ['posts'] as const,

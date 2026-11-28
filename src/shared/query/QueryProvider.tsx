@@ -8,12 +8,17 @@ import { useSessionManager } from '../auth/AuthProvider';
 export const shouldRetry = (failures: number, error: unknown) =>
   !(error instanceof ApiError && error.status >= 400 && error.status < 500) && failures < 2;
 
+const isJest = Boolean(
+  (globalThis as { process?: { env?: { JEST_WORKER_ID?: string } } }).process?.env?.JEST_WORKER_ID,
+);
+
 export const createQueryClient = () =>
   new QueryClient({
     defaultOptions: {
       queries: {
         staleTime: 30_000,
-        gcTime: 5 * 60_000,
+        // Avoid 5-minute gcTime timers keeping Jest open after component unmount.
+        gcTime: isJest ? Infinity : 5 * 60_000,
         retry: shouldRetry,
         // There is no browser tab in a phone app; refresh explicitly (pull to refresh) instead.
         refetchOnWindowFocus: false,
@@ -46,5 +51,16 @@ export function QueryProvider({
       }
     });
   }, [session, queryClient]);
+  useEffect(() => {
+    return () => {
+      if (!client) {
+        queryClient.cancelQueries();
+        queryClient.clear();
+        // Child useQuery observer unmounts run after parent cleanup and schedule gcTime timers;
+        // clearing again on the next microtask removes those timers immediately.
+        Promise.resolve().then(() => queryClient.clear());
+      }
+    };
+  }, [client, queryClient]);
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }
